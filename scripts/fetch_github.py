@@ -24,6 +24,37 @@ REWARD = re.compile(r"\b(?:bounty|bounties|reward|rewards|payout|payouts|compens
 EXPENSE = re.compile(r"\b(?:buy|purchase|cost|fee|fees|credit|credits|subscription|deposit|spend|expense|charge|gas)\b|\b(?:must\s+pay|pay\s+(?:for|to|before))\b", re.I)
 UNAVAILABLE = re.compile(r"(?:current\s+work\s+state|lifecycle|work\s+state)\s*[:=-]\s*`?unavailable`?|\b(?:bounty|reward)\s+(?:is\s+)?(?:closed|unavailable|no\s+longer\s+available)\b|\bno\s+longer\s+accepting\b", re.I)
 QUESTION = re.compile(r"\b(?:is|whether)\s+(?:this|the)\s+(?:bounty|reward)\s+still\s+available\b|\bcould\s+you\s+confirm\b.{0,120}\b(?:bounty|reward)\b.{0,80}\bavailable\b", re.I | re.S)
+PROPOSAL = re.compile(
+    r"\b(?:proposed|proposal|would\s+you|could\s+you|consider|approve|sponsor)\b.{0,160}\b(?:bounty|reward|paid|payment|compensation)\b"
+    r"|\b(?:bounty|reward|paid|payment|compensation)\b.{0,160}\b(?:proposed|proposal|would\s+you|could\s+you|consider|approve|sponsor)\b",
+    re.I | re.S,
+)
+SECONDARY_SOURCE = re.compile(
+    r"外部\s*bounty\s*任务镜像"
+    r"|###\s*赏金平台\s*/\s*platform\b.{0,400}###\s*原始链接\s*/\s*source url\b",
+    re.I | re.S,
+)
+EXTERNAL_REFERENCE = re.compile(r"^\s*##\s+(?:current external state|verified live opportunities)\b", re.I | re.M)
+NOT_ACTIONABLE_TITLE = re.compile(r"^\s*\[(?:draft|quarantined|unfunded)\b", re.I)
+NOT_ACTIONABLE = re.compile(
+    r"^\s*(?:>\s*)?(?:\*\*)?unfunded\s+precommit\b"
+    r"|\b(?:this\s+issue|this\s+bounty)\s+is\s+not\s+(?:yet\s+)?(?:funded|claimable|live)\b"
+    r"|\bnot\s+funded\s+or\s+claimable\b"
+    r"|\bfunding\s+needed\s*\.\s*do\s+not\s+start\s+expecting\s+payment\b"
+    r"|\bdo\s+not\s+claim\b"
+    r"|\bdo\s+not\b.{0,100}\bstart\s+implementation\b"
+    r"|\bbecomes\s+paid\s+work\s+only\s+after\b"
+    r"|\bdo\s+not\s+announce\b.{0,100}\bas\s+live\b",
+    re.I | re.M | re.S,
+)
+NOT_ACTIONABLE_LABELS = {"funding-needed"}
+INDIRECT = re.compile(r"^\s*\[META\]|\bgross\s+margin\b", re.I)
+DIRECT_TITLE_AMOUNT = re.compile(r"\b(?:bounty|reward|prize)\b\s*[:-]?\s*\d[\d,]*(?:\.\d+)?", re.I)
+DIRECT_REWARD_PREFIX = re.compile(
+    r"^\s*(?:#{1,6}\s*)?(?:[-*]\s*)?(?:\*\*)?"
+    r"(?:bounty|reward|prize|payment|payout|compensation|solver\s+reward|target\s+solver\s+reward)\b",
+    re.I,
+)
 CURRENCY = r"(?:US\$|\$|USD|CAD|AUD|EUR|€|GBP|£|JPY|USDC|USDT|BTC|ETH|SOL)"
 AMOUNT = r"(?:\d[\d,]*(?:\.\d{1,8})?)"
 MONEY = (
@@ -134,18 +165,48 @@ def distance(pattern: re.Pattern[str], text: str, pos: int, radius: int = 120) -
     return min((min(abs(pos - m.start()), abs(pos - m.end())) for m in matches), default=None)
 
 
+def reward_from_match(match: re.Match[str], text: str, association: str) -> dict[str, Any]:
+    amount = float(match.group("amount").replace(",", ""))
+    amount = int(amount) if amount.is_integer() else amount
+    currency_token = match.group("currency").upper()
+    if currency_token in {"$", "US$"}:
+        stablecoin = re.match(r"\s*(USDC|USDT)\b", text[match.end():match.end() + 12], re.I)
+        currency = stablecoin.group(1).upper() if stablecoin else "USD"
+    else:
+        currency = {"€": "EUR", "£": "GBP"}.get(currency_token, currency_token)
+    start, end = max(0, match.start() - 100), min(len(text), match.end() + 100)
+    return {
+        "amount": amount,
+        "currency": currency,
+        "provenance": "stated" if association in MAINTAINERS else "unverified",
+        "verified": False,
+        "evidence": compact(text[start:end], 260),
+    }
+
+
 def reward_metadata(title: str, body: str, labels: list[str], association: str) -> dict[str, Any]:
     text, label_text = f"{title}\n{body}", " ".join(labels)
+
+    title_matches = sorted((m for pattern in MONEY for m in pattern.finditer(title)), key=lambda m: m.start())
+    for match in title_matches:
+        reward_d = distance(REWARD, title, match.start(), radius=80)
+        if reward_d is not None and reward_d <= 50:
+            return reward_from_match(match, title, association)
+
+    for line in body.splitlines():
+        if not DIRECT_REWARD_PREFIX.search(line):
+            continue
+        line_matches = sorted((m for pattern in MONEY for m in pattern.finditer(line)), key=lambda m: m.start())
+        if line_matches:
+            return reward_from_match(line_matches[0], line, association)
+
     matches = sorted((m for pattern in MONEY for m in pattern.finditer(text)), key=lambda m: m.start())
     for match in matches:
         reward_d, expense_d = distance(REWARD, text, match.start()), distance(EXPENSE, text, match.start())
         if reward_d is None or (expense_d is not None and expense_d <= reward_d):
             continue
-        amount = float(match.group("amount").replace(",", ""))
-        amount = int(amount) if amount.is_integer() else amount
-        currency = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP"}.get(match.group("currency").upper(), match.group("currency").upper())
-        start, end = max(0, match.start() - 100), min(len(text), match.end() + 100)
-        return {"amount": amount, "currency": currency, "provenance": "stated" if association in MAINTAINERS else "unverified", "verified": False, "evidence": compact(text[start:end], 260)}
+        return reward_from_match(match, text, association)
+
     signal = REWARD.search(text)
     if signal:
         return {"amount": None, "currency": None, "provenance": "unverified", "verified": False, "evidence": compact(text[max(0, signal.start()-80):signal.end()+120], 240)}
@@ -160,6 +221,42 @@ def category(title: str, labels: list[str]) -> str:
         if any(term in text for term in terms):
             return value
     return "unknown"
+
+
+def direct_reward_offer(title: str, body: str) -> bool:
+    if DIRECT_TITLE_AMOUNT.search(title):
+        return True
+    for pattern in MONEY:
+        for match in pattern.finditer(title):
+            reward_d = distance(REWARD, title, match.start(), radius=80)
+            if reward_d is not None and reward_d <= 50:
+                return True
+    for line in body.splitlines():
+        if DIRECT_REWARD_PREFIX.search(line) and any(pattern.search(line) for pattern in MONEY):
+            return True
+    return False
+
+
+def candidate_classification(title: str, body: str, labels: list[str], association: str, reward: dict[str, Any]) -> str:
+    text = f"{title}\n{body}"
+    label_set = {label.lower() for label in labels}
+    if reward["amount"] is None:
+        return "no_explicit_reward_amount"
+    if "external-mirror" in label_set or "bounty-alert" in label_set or SECONDARY_SOURCE.search(text):
+        return "secondary_source"
+    if QUESTION.search(text):
+        return "availability_inquiry"
+    if UNAVAILABLE.search(text) or NOT_ACTIONABLE_TITLE.search(title) or NOT_ACTIONABLE.search(text) or label_set & NOT_ACTIONABLE_LABELS:
+        return "not_actionable"
+    if association not in MAINTAINERS:
+        return "contributor_proposal" if PROPOSAL.search(text) else "third_party_claim"
+    if INDIRECT.search(title):
+        return "indirect_or_meta"
+    if EXTERNAL_REFERENCE.search(body):
+        return "secondary_reference"
+    if not direct_reward_offer(title, body):
+        return "incidental_reward_mention"
+    return "maintainer_reward_offer"
 
 
 def normalize_issue(item: dict[str, Any], source_id: str, checked_at: str, now: dt.datetime, stale_days: int, excluded: set[str]) -> dict[str, Any] | None:
@@ -178,13 +275,12 @@ def normalize_issue(item: dict[str, Any], source_id: str, checked_at: str, now: 
     labels = sorted(str(x.get("name")) for x in item.get("labels", []) if isinstance(x, dict) and x.get("name"))
     association = str(item.get("author_association") or "NONE").upper()
     reward = reward_metadata(title, body, labels, association)
-    if reward["amount"] is None:
+    if candidate_classification(title, body, labels, association, reward) != "maintainer_reward_offer":
         return None
-    text = f"{title}\n{body}"
     return {
         "id": f"github-{project.replace('/', '-')}-{number}", "source": "github", "source_url": url,
         "title": title, "project": project, "issue_number": number, "category": category(title, labels),
-        "status": "unclear" if UNAVAILABLE.search(text) or QUESTION.search(text) else "open", "github_state": "open",
+        "status": "open", "github_state": "open",
         "reward": reward, "difficulty": "unknown", "ai_assistability": "unknown", "deadline": None,
         "competition": {"attempts": None, "claims": None, "open_prs": None},
         "assignees": sorted(str(x.get("login")) for x in item.get("assignees", []) if isinstance(x, dict) and x.get("login")),
