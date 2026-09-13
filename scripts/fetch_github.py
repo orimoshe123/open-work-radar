@@ -49,7 +49,7 @@ NOT_ACTIONABLE = re.compile(
 )
 NOT_ACTIONABLE_LABELS = {"funding-needed"}
 INDIRECT = re.compile(r"^\s*\[META\]|\bgross\s+margin\b", re.I)
-DIRECT_TITLE_AMOUNT = re.compile(r"\b(?:bounty|reward|prize)\b\s*[:#-]?\s*\d[\d,]*(?:\.\d+)?", re.I)
+DIRECT_TITLE_AMOUNT = re.compile(r"\b(?:bounty|reward|prize)\b\s*[:-]?\s*\d[\d,]*(?:\.\d+)?", re.I)
 DIRECT_REWARD_PREFIX = re.compile(
     r"^\s*(?:#{1,6}\s*)?(?:[-*]\s*)?(?:\*\*)?"
     r"(?:bounty|reward|prize|payment|payout|compensation|solver\s+reward|target\s+solver\s+reward)\b",
@@ -165,23 +165,48 @@ def distance(pattern: re.Pattern[str], text: str, pos: int, radius: int = 120) -
     return min((min(abs(pos - m.start()), abs(pos - m.end())) for m in matches), default=None)
 
 
+def reward_from_match(match: re.Match[str], text: str, association: str) -> dict[str, Any]:
+    amount = float(match.group("amount").replace(",", ""))
+    amount = int(amount) if amount.is_integer() else amount
+    currency_token = match.group("currency").upper()
+    if currency_token in {"$", "US$"}:
+        stablecoin = re.match(r"\s*(USDC|USDT)\b", text[match.end():match.end() + 12], re.I)
+        currency = stablecoin.group(1).upper() if stablecoin else "USD"
+    else:
+        currency = {"€": "EUR", "£": "GBP"}.get(currency_token, currency_token)
+    start, end = max(0, match.start() - 100), min(len(text), match.end() + 100)
+    return {
+        "amount": amount,
+        "currency": currency,
+        "provenance": "stated" if association in MAINTAINERS else "unverified",
+        "verified": False,
+        "evidence": compact(text[start:end], 260),
+    }
+
+
 def reward_metadata(title: str, body: str, labels: list[str], association: str) -> dict[str, Any]:
     text, label_text = f"{title}\n{body}", " ".join(labels)
+
+    title_matches = sorted((m for pattern in MONEY for m in pattern.finditer(title)), key=lambda m: m.start())
+    for match in title_matches:
+        reward_d = distance(REWARD, title, match.start(), radius=80)
+        if reward_d is not None and reward_d <= 50:
+            return reward_from_match(match, title, association)
+
+    for line in body.splitlines():
+        if not DIRECT_REWARD_PREFIX.search(line):
+            continue
+        line_matches = sorted((m for pattern in MONEY for m in pattern.finditer(line)), key=lambda m: m.start())
+        if line_matches:
+            return reward_from_match(line_matches[0], line, association)
+
     matches = sorted((m for pattern in MONEY for m in pattern.finditer(text)), key=lambda m: m.start())
     for match in matches:
         reward_d, expense_d = distance(REWARD, text, match.start()), distance(EXPENSE, text, match.start())
         if reward_d is None or (expense_d is not None and expense_d <= reward_d):
             continue
-        amount = float(match.group("amount").replace(",", ""))
-        amount = int(amount) if amount.is_integer() else amount
-        currency_token = match.group("currency").upper()
-        if currency_token in {"$", "US$"}:
-            stablecoin = re.match(r"\s*(USDC|USDT)\b", text[match.end():match.end() + 12], re.I)
-            currency = stablecoin.group(1).upper() if stablecoin else "USD"
-        else:
-            currency = {"€": "EUR", "£": "GBP"}.get(currency_token, currency_token)
-        start, end = max(0, match.start() - 100), min(len(text), match.end() + 100)
-        return {"amount": amount, "currency": currency, "provenance": "stated" if association in MAINTAINERS else "unverified", "verified": False, "evidence": compact(text[start:end], 260)}
+        return reward_from_match(match, text, association)
+
     signal = REWARD.search(text)
     if signal:
         return {"amount": None, "currency": None, "provenance": "unverified", "verified": False, "evidence": compact(text[max(0, signal.start()-80):signal.end()+120], 240)}
