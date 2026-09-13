@@ -242,6 +242,8 @@ def candidate_classification(title: str, body: str, labels: list[str], associati
     label_set = {label.lower() for label in labels}
     if reward["amount"] is None:
         return "no_explicit_reward_amount"
+    if float(reward["amount"]) <= 0:
+        return "non_positive_reward"
     if "external-mirror" in label_set or "bounty-alert" in label_set or SECONDARY_SOURCE.search(text):
         return "secondary_source"
     if QUESTION.search(text):

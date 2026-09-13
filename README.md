@@ -35,6 +35,7 @@ v0.1a deliberately favors **precision over recall**:
 - closed and stale Issues are excluded;
 - this repository excludes itself from collection;
 - a reward-like label or word without an explicit amount is not enough to enter the dataset;
+- the explicit reward amount must be greater than zero; zero-value bounties are not treated as paid opportunities;
 - v0.1a only treats a direct reward offer authored by an `OWNER`, `MEMBER`, or `COLLABORATOR` as actionable; contributor-authored reward proposals and third-party claims are excluded until stronger approval evidence can be collected;
 - the reward must be presented as payment for the current Issue, not merely appear in a log, funding note, historical payout, external-opportunity roundup, or other incidental context;
 - self-identified mirror/index Issues are excluded even when the mirror repository's owner authored them;

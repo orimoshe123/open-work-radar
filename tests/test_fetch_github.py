@@ -190,6 +190,15 @@ class CollectorTests(unittest.TestCase):
         item = self.issue(6, title="Bounty available", body="Please fix the docs.")
         self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
 
+    def test_zero_reward_is_not_actionable(self):
+        item = self.issue(7, title="Bounty: USD 0", body="Please fix the docs.")
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward),
+            "non_positive_reward",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
     def test_self_repository_is_excluded(self):
         item = self.issue(5, project="yo4e/open-work-radar")
         self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, {"yo4e/open-work-radar"}))
