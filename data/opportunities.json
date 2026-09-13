@@ -24,7 +24,7 @@
       "help wanted",
       "status: open bounty"
     ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "HHS/simpler-grants-gov",
     "published_at": "2026-04-23T19:17:45Z",
@@ -40,453 +40,6 @@
     "status": "open",
     "title": "Add unit tests for `src.services.service_utils`",
     "updated_at": "2026-09-08T21:32:49Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `#1574` 是一条尚未转正的 intake：多轮角色扮演里，LLM 会**替用户说话/替用户行动**（俗称 god-moding）——用户还没输入， 模型已经写出\"用户说：…\"。这类失败在角色扮演/助手类产品里很常见，而语料里目前**没有**一篇把机制讲清的课程。 ## 任务 把 `#1574` 的报料转成一门正式课程：`lessons/contrib/<kebab-case>.md`（文件名用英文、不带项目前缀）。 ## 验收标准（AC） - [ ] 新建 `lessons/contrib/<kebab-case>.md`，frontmatter 齐备：`title` / `domain` / `tags` / `status: published` / `created` / `updated` / `evidence_level` / `provenance`（`contributor` 写真名或节点名，`issue: \"#1574\"`） - [ ] `## Problem` 写清**症状**（谁在什么输入下看到了什么），并引用报料里的原始描述 - [ ] `## Root Cause` 落到**机制层**：为什么自回归解码会把\"用户的话\"当成可续写的文本、系统提示/角色卡如何放大这一点、 以及\"多轮拼接 + 缺少说话人约束\"如何让模型越权——不是\"提示词没写好\" - [ ] `## Solution` 给**可复制处方**（至少 3 条可操作项，例如：把说话人边界做成结构化字段而不是纯文本、输出侧校验 \"是否包含用户独占发言\"、采样/停止条件、必要时在提示中显式禁止代替用户） - [ ] `## Verification` 给出**可跑或可量化的对比**（修复前后各跑 N 轮的越权率/触发率），或明确写\"未在本环境复现\"并说明原因 （**禁止**编造运行输出） - [ ] `python3 scripts/lesson_gate.py <file>` 与 `python3 scripts/injection_scan.py --dir lessons` 通过（无新增 high） - [ ] 与 `lessons/contrib/` 中已有的 roleplay/agent 课程互引（至少一条相关课程链接） - [ ] PR 只包含课程文件与 `lessons/index.md` 的一行；**不要**提交生成物（由每日 job 重新生成） ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #1650</code> either in the PR description or in a PR's comment.<br/><br/>🪙 Also, everyo…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1650",
-    "issue_number": 1650,
-    "labels": [
-      "agent-friendly",
-      "area:core",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T11:55:54Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1574（LLM 代替用户发言 / god-moding）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1650",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1574（LLM 代替用户发言 / god-moding）转成课程",
-    "updated_at": "2026-09-13T11:59:13Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `#1555` 报的是通过 OpenRouter SDK 调用 nano-gpt.com 的 **SSE 流式** 接口失败。语料里有 HTTP/超时/代理类课程， 但\"流式 SSE 在中间层被缓冲/解析失败\"这一类**没有**专文——而它恰好是 agent 工具链里最常见的一类静默故障。 ## 任务 把 `#1555` 转成课程：`lessons/contrib/<kebab-case>.md`。 ## 验收标准（AC） - [ ] 新建课程文件，frontmatter 齐备（含 `provenance.issue: \"#1555\"`），文件名英文 kebab-case - [ ] `## Problem`：写清症状与**最小复现条件**（哪个 SDK/端点/是否经代理、是否只在流式时失败） - [ ] `## Root Cause` 机制层：区分至少两种情况——(a) 中间层（代理/网关）把 SSE 缓冲成一次性响应而客户端在等分块， (b) 客户端按非流式解析 `text/event-stream`（或反之）——并说明为什么这两种表现相似、如何区分 - [ ] `## Solution` 给可复制处方：正确的请求头（`Accept: text/event-stream`、是否需 `Connection: keep-alive`）、 逐行解析 `data:` 帧并处理 `[DONE]`、超时/重试策略、如何在代理环境下关闭缓冲 - [ ] `## Verification`：一段**可跑**的最小客户端脚本（curl `-N` 或等效）与预期输出形态；若未实测请如实声明 - [ ] 门禁：`lesson_gate.py` + `injection_scan.py`（无新增 high）通过 - [ ] PR 只含课程 + `lessons/index.md` 一行 ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #1651</code> either in the PR description or in a PR's comment.<br/><br/>🪙 Also, everyone can tip any user commenting <code>/tip 20 @Ikalus1988</code> (replace <code>20</code> with the amount, and <code>@Ikalus1988</code> with the user to tip).<br/><br/>📖 If you want to learn more, check out our <a href=\"https://docs.opire.dev\">do…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1651",
-    "issue_number": 1651,
-    "labels": [
-      "agent-friendly",
-      "area:core",
-      "bounty",
-      "good first issue",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T11:55:56Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1555（nano-gpt.com SSE 流式调用失败）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1651",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1555（nano-gpt.com SSE 流式调用失败）转成课程",
-    "updated_at": "2026-09-13T12:50:35Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `#1553` 报的是 `subprocess.CalledProcessError`：`alembic upgrade head` 失败。数据库迁移失败在 CI/本地环境里极常见， 但语料里没有把\"迁移失败如何分层定位\"讲清的课程（是 SQL 错、还是模型与迁移脚本不一致、还是权限/连接问题）。 ## 任务 把 `#1553` 转成课程：`lessons/contrib/<kebab-case>.md`。 ## 验收标准（AC） - [ ] 新建课程文件，frontmatter 齐备（含 `provenance.issue: \"#1553\"`） - [ ] `## Problem`：给出报料中的命令与错误摘要，并指出**在哪里失败**（连接/权限/SQL/数据冲突/模型漂移） - [ ] `## Root Cause` 机制层：解释 alembic 的版本表（`alembic_version`）与本地模型定义如何产生分叉， 以及为什么\"直接改迁移文件\"会让别人升级失败 - [ ] `## Solution` 可复制处方：`alembic current` / `history` / `heads` 三连定位、多 head 的处理 （`merge` 迁移）、不可变迁移原则、离线库与 CI 的初始状态如何对齐 - [ ] `## Verification`：给出**可跑**的定位命令序列与判据（例如 `alembic heads` 只应有一个 head）， 或如实声明未实测 - [ ] 门禁通过（`lesson_gate.py` / `injection_scan.py`，无新增 high） - [ ] PR 只含课程 + `lessons/index.md` 一行 ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #1652</code> either in the PR description or in a PR's comment.<br/><br/>🪙 Also, everyone can tip any user commenting <code>/tip 20 @Ikalus1988</code> (replace <code>20</code> with the amount, and <code>@Ikalus1988</code> with the user to tip).<br/><br/>📖 If you want to learn more, check out our <a href=\"https://docs.opire.dev\">documentation</a>.</details>",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1652",
-    "issue_number": 1652,
-    "labels": [
-      "agent-friendly",
-      "area:core",
-      "bounty",
-      "good first issue",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T11:55:57Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1553（alembic upgrade 失败）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1652",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1553（alembic upgrade 失败）转成课程",
-    "updated_at": "2026-09-13T12:50:36Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `#1562` 想要的是\"按**错误签名**（而非关键词）检索\"：把失败文本规范化成签名（去掉路径、时间戳、PID、地址等易变片段）， 再按签名建立索引，使\"同一类失败\"能被稳定召回。目前检索是 BM25 词项匹配 + 相关性下限（见 `docs/worker-bm25-search.md` 与 `workers/register-proxy-sw.js`），对\"同一错误的多种写法\"召回不稳。 注意：曾有一个 PR（#1617）声称实现它，实际只新增了一个含随机数的文件，已关闭——请先读本 issue 的规则。 ## 任务（两步，第一步先做） **第一步（必须）**：在本 issue 里贴一份**设计方案评论**（不超过 80 行），至少覆盖： 签名规范化规则（哪些片段被抹掉、如何避免过度抹平）、存储（D1 表还是 worker 索引字段）、 与现有 BM25 的关系（替换还是叠加）、如何评测、以及**不做什么**。 **第二步**：方案在本 issue 得到维护者确认后再实现（PR 引用本 issue）。 ## 验收标准（AC） - [ ] 方案评论已贴出，并覆盖上面五点 - [ ] 实现只改必要文件；`node --test workers/*.test.mjs` 全绿（当前 191 项） - [ ] 至少 3 组\"同一失败的不同写法\"作为测试用例，断言召回同一个课程 id - [ ] 至少 2 组\"不同失败\"的用例，断言不会互相召回（防止把签名抹得过平） - [ ] 附线上前后对比证据（可用 `GET /api/search-index` 与一次真实检索的输入/输出） - [ ] 不修改生成物；不改动与签名无关的检索行为 ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #1654</code> either in the PR description or in a PR's comment.<br/><br/>🪙 Also, everyone can tip any user commenting <code>/tip 20 @Ikalus1988</code> (replace <code>20</code> with the amount, and <code>@Ikalus1988</code> with the user to tip).<br/><br/>📖 If you want to learn more, check out our <a href=\"https://docs.opire.dev\">documentation</a>.</details>",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1654",
-    "issue_number": 1654,
-    "labels": [
-      "agent-friendly",
-      "area:core",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T11:55:59Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Search] error-signature 索引（#1562）：先方案后实现",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1654",
-    "status": "open",
-    "title": "[Bounty][$0][Search] error-signature 索引（#1562）：先方案后实现",
-    "updated_at": "2026-09-13T11:58:18Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `#1643` 是一条尚未转正的 intake（葡语）：角色扮演里，当**活跃 NPC 被派去外部地点**、而用户**间接提到一个不在场的第三方**时， 系统会退化到\"主角是谁\"的判断，于是出现**同一场景的空间错位（bilocation）**与 `active_speaker` 丢失。 报料者已给出修法方向（外部 P.O.V. 的泛化、保留 `active_speaker`、严格的空间单一性规则）——正好可以成课。 语料里今天刚合入两篇同族课程（呼语/提及消歧、对话循环与上下文投毒），这一篇会是第三块拼图。 ## 任务 把 `#1643` 转成课程：`lessons/contrib/<kebab-case>.md`（英文文件名）。 ## 验收标准（AC） - [ ] 新建课程文件，frontmatter 齐备（含 `provenance.issue: \"#1643\"` 与 `contributor`） - [ ] `## Problem`：用一个最小的对话序列说明三件事如何同时发生（NPC 外派 / 间接提及第三方 / 说话人与地点同时错位） - [ ] `## Root Cause` 机制层：为什么\"说话人解析\"回退到主角、为什么 `active_speaker` 会丢、以及为什么 **空间单一性（一个场景一个地点）** 是独立于说话人解析的第二道约束——不要只写\"规则不够严\" - [ ] `## Solution`：给出可复制的处方（P.O.V. 泛化到 NPC、显式保留 `active_speaker`、 以场景为单位校验地点一致性、以及在多地点并行回合时如何标注） - [ ] `## Verification`：给出**可判定**的验证用例（例如同一输入下修复前后 `speaker`/`location` 的期望值）， 或如实声明未在本环境复现 - [ ] 与 `lessons/contrib/` 中的同族课程互引（至少两条：呼语/提及消歧、对话循环） - [ ] 门禁：`lesson_gate.py` + `injection_scan.py`（无新增 high）通过 - [ ] PR 只含课程文件 + `lessons/index.md` 一行；不提交生成物 ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 想要真实赏金请找带 `/reward` 评论且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；一个任务只保留一个进行中的 PR；认领后 7 天无 push 视为释放； - 有疑问先在本 issue 问，不要先写代码； - 会被直接关闭、不进入评审的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核、只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #1655</code> either in the PR description or in a PR's comment.<br/><br/>🪙 Also, everyone can tip any user commenting <code>/tip 20 @Ikalus1988</code> (replace <code>20</code> with the amount, and <code>@Ikalus1988</code> with…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1655",
-    "issue_number": 1655,
-    "labels": [
-      "agent-friendly",
-      "area:core",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T11:56:41Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1643（NPC 外派 + 间接提及 → 说话人/地点错位）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1655",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1643（NPC 外派 + 间接提及 → 说话人/地点错位）转成课程",
-    "updated_at": "2026-09-13T11:57:25Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `lessons/index.md` 是给人看的课程目录（`scripts/queue_lesson.py::_update_index` 会往里追加一行）。它已经系统性漂移，2026-09-13 实测： | 检查 | 结果 | |---|---| | 条目数 | 181 | | 指向不存在的课程文件 | **25** 条 | | 标题与课程 frontmatter 不一致 | **136** 条（多为旧标题/截断标题）| | domain 与 frontmatter 不一致 | **85** 条 | | tags 与 frontmatter 不一致 | **52** 条 | | 语料文件 417 个，被收录 | **166** 个 | 而且它很脆：PR #1656 一次提交就把它从 191 行压到 48 行（-146），并把剩余条目里的连字符吃掉 （`background-logic` → `backgroundlogic`、`Cross-Turn` → `CrossTurn`）。原因是本地一份旧副本覆盖了仓库版本， 而**没有任何门禁**会发现这件事。 ## 任务 1. 写一个**重建**脚本（建议 `scripts/rebuild_lessons_index.py`），从语料重新生成 `lessons/index.md`： - 扫描 `lessons/core/`、`lessons/contrib/`、`lessons/en/` 下的 `*.md`（排除 `README.md` / `index.md` / `TEMPLATE.md` / `CONTRIBUTING.md`）； - 每行格式与现有行保持一致：`- [<title>](<相对 lessons/ 的路径>) | <domain> | \"<tag>\", \"<tag>\" | <source>` （`source` 取 frontmatter 的 `source`；没有就留空）； - 标题 / domain / tags **必须来自 frontmatter**，不许截断、不许改写连字符； - 按路径排序，输出确定性（同一语料跑两次字节相同）。 2. 给脚本加 `--check`：文件与语料不一致时**非零退出**并打印差异（最多 20 行），一致时静默通过。 参照 `scripts/sync_lesson_count.py --check` 的用法与输出风格。 3. 把它接进一个已有 workflow（**不要**新建 PR 门禁工作流）：建议 `update-lessons.yml` 的每日 job 里 先跑重建再跑 `--check`，让它像 `sync_lesson_count.py` 一样自我修复。 ## 验收标准（AC） - [ ] 新增重建脚本，能一次把 `lessons/index.md` 重写成与语料一致（181 条漂移全部消失：无悬空路径、标题/domain/tags 与 frontmatter 完全一致） - [ ] `--check` 在人为制造差异（改一行、加一行、删一行）时返回非零并打印差异；一致时返回 0 - [ ] 输出确定性：连续跑两次，`git diff` 为空 - [ ] 接进已有 workflow（每日 job 重建 + `--check`），**不新增 PR 门禁** - [ ] 附最小测试或可复现步骤（PR 描述里贴命令 + 输出） - [ ] PR 只含脚本 + 测试 + workflow 改动 + 重建后的 `lessons/index.md`（**不要**手改 `data/lessons.json`、`docs/data/*`） ## 提示 - 语料里有中英混排标题与 JSON/YAML 两种 frontmatter，用 `scripts/lesson_gate.py` 的 `parse_frontmatter()` 最省事（两种都支持）。 - 现在 `queue_lesson.py` 仍在往这个文件追加。**本次不改它**（重建脚本接管后，追加会自然被每日 job 覆盖）； 如果你想顺手把 `queue_lesson.py::_update_index` 改成调用重建脚本，请在 PR 里单独说明。 ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1661",
-    "issue_number": 1661,
-    "labels": [
-      "agent-friendly",
-      "area:lessons",
-      "area:scripts",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T13:29:14Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Ops] 重建 lessons/index.md 并加 --check 门禁（当前 181 条里 25 条悬空、136 条标题不符）",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1661",
-    "status": "open",
-    "title": "[Bounty][$0][Ops] 重建 lessons/index.md 并加 --check 门禁（当前 181 条里 25 条悬空、136 条标题不符）",
-    "updated_at": "2026-09-13T13:30:27Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 两条 intake 报的是同一类失败：**模型 ID 的写法与服务端的期望不一致**。 - #1472：调用 Vertex AI 的 chat/completions 时传了裸模型名（如 `gemini-3.8-flash`），请求失败。 - #1473：调用 Gemini 系列（如 `google/gemini-3.8-flash`、`gemini-3.7-flash`）时，带前缀/不带前缀的两种写法行为不同。 语料里没有这两条（2026-09-13 实测：`misakanet_search(\"gemini vertex model id\")` → `no_match`）。 这类问题在跨 provider 网关（OpenRouter / 直连 Vertex / 直连 Gemini）之间最容易踩：**同一模型在不同入口有不同命名规则**， 而错误信息通常只说\"model not found\"，不告诉你该加还是该去前缀。 ## 任务 写一篇课程：`lessons/contrib/<kebab-case>.md`，把\"模型 ID 的命名空间规则\"讲成可操作的判据。 ## 验收标准（AC） - [ ] 新建课程文件，frontmatter 齐备（含 `provenance.issue: \"#1472\"`，并在正文里同时引用 #1473） - [ ] `## Problem`：给出报错摘要，并指出**失败发生在哪一层**（模型名解析 / 路由 / 权限 / 区域端点） - [ ] `## Root Cause`（机制层）：说明\"裸名 vs 带 provider 前缀\"各自被谁解析、为什么同一字符串在不同入口的结果不同； 至少覆盖 **Vertex AI（project/location 作用域）** 与 **Gemini API（API key 作用域）** 的差别 - [ ] `## Solution`：给出可复制的对照表（入口 × 正确写法 × 常见错误写法），以及一个\"拿到 404/model not found 时的三步定位法\" - [ ] `## Verification`：给出可跑的命令或最小请求（`curl` 即可）+ 判据；**没有实测就如实写\"未实测\"** - [ ] 门禁通过（`lesson_gate.py` / `injection_scan.py`，无新增 high） - [ ] PR 只含课程文件（**不要**手改 `data/lessons.json`、`docs/data/*`） - [ ] 合入后在本 issue 与 #1473 各留一条回执（§ 回执铁律），然后关闭两条 intake ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #NNN…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1665",
-    "issue_number": 1665,
-    "labels": [
-      "agent-friendly",
-      "area:lessons",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T17:02:02Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1472 + #1473（Vertex/Gemini 模型 ID 命名）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1665",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1472 + #1473（Vertex/Gemini 模型 ID 命名）转成课程",
-    "updated_at": "2026-09-13T17:04:00Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 两条 intake 报的是同一类失败：**写入成功返回、数据却没落库**——最难查的一种，因为没有报错可看。 - #1618：BigQuery 的埋点/遥测整体\"哑掉\"，**没有任何错误**。 - #1619：Firestore Go 客户端 `DocumentRef.Set(ctx, structWithOmitempty)`，带 `omitempty` 的字段**没有被写入**。 语料里没有这两条（2026-09-13 实测：`misakanet_search(\"firestore go omitempty not saved\")` → `no_match`）。 共同机制是**静默丢弃**：序列化/绑定层把字段省略、或写入路径把错误吞掉，于是调用方拿到\"成功\"。 ## 任务 写一篇课程：`lessons/contrib/<kebab-case>.md`，把\"写成功但数据没到\"这类静默失败拆成可检查的层次。 ## 验收标准（AC） - [ ] 新建课程文件，frontmatter 齐备（含 `provenance.issue: \"#1619\"`，并在正文里同时引用 #1618） - [ ] `## Problem`：给出两个现场的症状摘要，并指出**为什么这类失败没有报错**（错误在哪一层被吞掉/被省略） - [ ] `## Root Cause`（机制层）：至少讲清两条链路—— (a) Go 端 `json`/Firestore 编解码里 `omitempty` 与\"零值是否发送\"的关系； (b) 遥测/写入管道里\"写入失败但不影响主流程\"的设计如何把错误藏起来 - [ ] `## Solution`：给出可复制处方（显式发送零值 / 用指针或 `[]byte` 表达\"要发空值\"、写入路径的返回值必须被检查或至少计数、 以及\"影子写\"自检：写一条已知值再读回比对） - [ ] `## Verification`：给出可跑命令或最小复现（Firestore emulator 或 fake client + 断言读回值；BigQuery 侧给查询语句 + 判据）， 或如实声明未实测 - [ ] 门禁通过（`lesson_gate.py` / `injection_scan.py`，无新增 high） - [ ] PR 只含课程文件（**不要**手改 `data/lessons.json`、`docs/data/*`） - [ ] 合入后在本 issue 与 #1618 各留一条回执，然后关闭两条 intake ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to earn the rewards, they can comment <code>/try</code> to let everyone know!<br/>🙌 And when they open the PR, they can comment <code>/claim #NNNN</code> in the PR description or as a PR comment.<…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "docs-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1666",
-    "issue_number": 1666,
-    "labels": [
-      "agent-friendly",
-      "area:lessons",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T17:02:03Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1618 + #1619（写成功但数据静默丢失）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1666",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1618 + #1619（写成功但数据静默丢失）转成课程",
-    "updated_at": "2026-09-13T17:03:45Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景 `#1635` 报的是**遥测少计**这一类静默失败，两条机制都值得单独成课（语料目前 0 覆盖， 2026-09-13 实测 `misakanet_search(\"LLM cost telemetry undercounted model column\")` → `no_match`）： **(a) `model` 列记的是\"请求的模型\"，不是\"实际服务的模型\"。** 走 OpenRouter 的 `models` 回退列表时， provider 可能用列表里的另一个模型回答，但 trace 仍把成本记到**被请求**的那个模型上 → 成本归因错了， 而且**运行时不报错**。 **(b) 被丢弃的尝试在记账之前就返回了错误。** 因 `finish_reason=length` 或退化而重试、以及流式中途断开时， 代码在\"记录 tokens/成本\"之前就 `return err`，于是 provider 计了两次费，而遥测里只有第二次 （客户端重发时还会把整段 prompt 再送一遍 → 成本约 2×）。 ## 任务 写一篇课程：`lessons/contrib/<kebab-case>.md`，把\"**遥测少计**\"作为失败类别讲清。 ## 验收标准（AC） - [ ] 新建课程文件，frontmatter 齐备（含 `provenance.issue: \"#1635\"`） - [ ] `## Problem`：给出两条症状摘要，并指出**为什么没有报错**（记账点在错误返回之后 / 归因用了请求值） - [ ] `## Root Cause`（机制层）： (a) 为什么\"请求的模型\"与\"实际服务的模型\"会不同（网关回退列表、别名、区域重路由），以及 SDK 里 哪个字段才是真值（OpenAI 兼容响应的 `model`、流式 chunk 的 `model`）； (b) 为什么\"先 `return err` 再记账\"必然少计，且**重试会放大**（同一 prompt 重新计费） - [ ] `## Solution`：可复制处方——记账点移到**所有出口之前**（成功/失败/流中断都记）、用**响应里的模型**做成本归因、 对丢弃的尝试也留一条记录（`attempt=N, discarded=true`）、以及一个\"时点自检\"：把成本台账与账单/用量接口对账一次 - [ ] `## Verification`：给出可跑判据（例如：构造一次回退/一次重试，断言遥测里出现两条记录且模型名是**实际服务**的那个； 或按 `attempt` 聚合后与 provider 用量对齐），或如实声明未实测 - [ ] 门禁通过（`lesson_gate.py` / `injection_scan.py`，无新增 high） - [ ] PR 只含课程文件（**不要**手改 `data/lessons.json`、`docs/data/*`） - [ ] 合入后在本 issue 留回执并关闭 ## 产出与回报 **zero-bounty = 0 金额**（本项目按设计不发放货币报酬）：回报是 merge credit、leaderboard 积分与 Hall of Fame 条目。 若你想要**真实赏金**，请找带 `/reward` 评论、且能在 Opire 侧核验托管的 issue。详见 `JOIN.md` § Bounties & payment。 ## 认领与规则 - 评论 `/try` 认领；**一个任务只保留一个进行中的 PR**；认领后 **7 天无 push 视为释放**； - 有疑问先在本 issue 问，不要先写代码； - **会被直接关闭、不进入评审**的形态：占位/骨架文件（内容与任务无关、只有随机数或 TODO）、手改生成物 （`data/lessons.json`、`docs/data/*`、`docs/_lessons_count.txt`）、缺 DCO 签核（`git rebase --signoff main`）、 只贴\"CI 绿灯\"而没有实际产出的 PR。 <br/> <hr/> <details><summary>This repo is using Opire - what does it mean? 👇</summary><br/>💵 Everyone can add rewards for this issue commenting <code>/reward 100</code> (replace <code>100</code> with the amount).<br/>🕵️‍♂️ If someone starts working on this issue to ear…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "bounty",
-      "docs-bounty",
-      "reward"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1672",
-    "issue_number": 1672,
-    "labels": [
-      "agent-friendly",
-      "area:lessons",
-      "bounty",
-      "help wanted",
-      "priority:high",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T22:41:57Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Lessons] 把 intake #1635（LLM 成本遥测少计：模型归因错 + 重试未记账）转成课程",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1672",
-    "status": "open",
-    "title": "[Bounty][$0][Lessons] 把 intake #1635（LLM 成本遥测少计：模型归因错 + 重试未记账）转成课程",
-    "updated_at": "2026-09-13T22:42:08Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## 背景（这是分诊时实测出来的缺陷，不是猜的） 2026-09-13 批量分诊 21 条 intake 时发现：**把 intake 标题原文当检索 query，会系统性低估语料的覆盖率**， 于是\"伪盲区\"会被误判成\"真盲区\"，直接导致要么漏掉已有课程、要么写出重复课。 两个实测样本： | intake | 用标题原文检索 | 用规范化短查询检索 | |---|---|---| | `#1460` \"Docker build fails with exit code 137 when using multi-stage builds…\" | 只召回一条 FAQ（18 分），看起来是盲区 | `docker exit code 137` → 召回真课 `kubernetes-crashloopbackoff-debugging` | | `#1499` \"In roleplay chat, third-person narrative or pronoun 'Ele' was interpreted…\" | 只召回 FAQ（20 分） | `roleplay vocative mention portuguese` → 已有课 `roleplay-vocative-entity-disambiguation-portuguese` | 原因很清楚：intake 标题是**自然语言长句 + 双语混杂 + 带来源元数据**，而课程标题是术语化的短标题， 词面重合度低；同时 FAQ 条目（`type: \"faq\"`）会占据 top 位置，把课程挤下去。 现在这件事**每轮分诊都要靠人肉重试**（见 `docs/maintainer/intake-triage-2026-09-13.md` 的\"方法本身的发现\"）。 ## 任务 新增一个分诊辅助脚本（建议 `scripts/intake_coverage.py`），输入一条 intake，输出\"覆盖判定\"，让人不再靠感觉判断。 ## 验收标准（AC） - [ ] 输入既支持 `--issue 1460`（走 `gh` 或 GitHub API 读标题+正文），也支持 `--title \"...\"` 直接给文本（便于测试与离线） - [ ] **规范化**：去掉 `[Intake]/[Question]/[Lesson]` 前缀、issue 尾部的自动模板（`_Submitted via remote MCP_`、Opire `<details>` 块）、`**Kind:**/**Source:**/**Dedup:**` 等元数据行；去掉中英葡常见停用词；保留术语与错误串（含下划线/点号/路径形态的词） - [ ] **查询构造**：输出 1–3 个候选 query（长句规范化后的关键词串；以及从中抽出的\"错误串/命令\"候选），而不是只输出一个 - [ ] **判定**：调用本地检索（**import `misakanet/search/engine.py`，不要走 `search_knowledge.py` CLI**——CLI 有匿名 IP 配额，会污染批量分诊），按下列口径输出结论： - `lesson-covered`：top-N 里有 `type != \"faq\"` 且分数 ≥ 阈值（阈值写进 `--min-score`，默认值需在 PR 里说明理由） - `faq-only`：只命中 FAQ - `no-coverage`：无命中 - [ ] 输出**逐条可读**：每条候选 query 命中了什么（id / type / 分数），以及最终结论；`--json` 输出同一份数据 - [ ] 附测试：至少覆盖\"长标题被规范化后能召回已有课\"（用 `#1460` 的标题做 fixture，断言命中那篇课）与\"元数据/Opire 模板被剥掉\"两个方向 - [ ] `pytest tests/ -k intake_coverage` 通过；不改动既有检索行为（本任务只加工具，**不调打分/阈值**） - [ ] PR 描述里贴一条真实运行的命令 + 输出（例如对 `#1460` 与 `#1618` 各跑一次，展示两种结论） ## 提示 - 语料侧已有的相关实现可以直接读：`misakanet/search/engine.py`（BM25 + 结果形态）、`scripts/intake_auto_review.py`（已有一套\"剥离流水线样板\"的逻辑 `strip_pipeline_boilerplate`，规范化可以复用它的思路，但**不要**直接改它） - 判定阈值不要拍脑袋：拿 5 条已知\"已有课\"的 intake 与 5 条已知\"无覆盖\"的 intake 当标定集，把选择依…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "bounty",
-      "docs-bounty",
-      "reward"
-    ],
-    "github_state": "open",
-    "id": "github-Ikalus1988-MisakaNet-1673",
-    "issue_number": 1673,
-    "labels": [
-      "agent-friendly",
-      "area:core",
-      "area:scripts",
-      "bounty",
-      "help wanted",
-      "ready",
-      "zero-bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
-    "notes": null,
-    "project": "Ikalus1988/MisakaNet",
-    "published_at": "2026-09-13T22:43:43Z",
-    "reward": {
-      "amount": 0,
-      "currency": "USD",
-      "evidence": "[Bounty][$0][Search] 分诊辅助：把 intake 标题规范化为检索 query 并判定覆盖率",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Ikalus1988/MisakaNet/issues/1673",
-    "status": "open",
-    "title": "[Bounty][$0][Search] 分诊辅助：把 intake 标题规范化为检索 query 并判定覆盖率",
-    "updated_at": "2026-09-13T23:00:08Z"
   },
   {
     "ai_assistability": "unknown",
@@ -514,7 +67,7 @@
       "payments",
       "verification-pending"
     ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "NSPG13/agent-bounties",
     "published_at": "2026-08-06T05:46:00Z",
@@ -553,7 +106,7 @@
     "labels": [
       "bounty"
     ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "Scottcjn/rustchain-bounties",
     "published_at": "2026-03-16T18:12:44Z",
@@ -594,7 +147,7 @@
       "bounty",
       "funded"
     ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "auscaster/frantic-board",
     "published_at": "2026-07-08T01:14:12Z",
@@ -634,7 +187,7 @@
       "core-team",
       "enhancement"
     ],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "cxlinux-ai/cx-distro",
     "published_at": "2025-11-12T02:20:55Z",
@@ -671,7 +224,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-14",
     "issue_number": 14,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-13T06:49:24Z",
@@ -708,7 +261,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-9",
     "issue_number": 9,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-12T17:52:37Z",
@@ -747,7 +300,7 @@
     "id": "github-kwizzlesurp10-ctrl-x402-mcp-494",
     "issue_number": 494,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "kwizzlesurp10-ctrl/x402-mcp",
     "published_at": "2026-08-26T15:06:21Z",
@@ -786,7 +339,7 @@
     "id": "github-kwizzlesurp10-ctrl-x402-mcp-495",
     "issue_number": 495,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "kwizzlesurp10-ctrl/x402-mcp",
     "published_at": "2026-08-26T15:06:28Z",
@@ -825,7 +378,7 @@
     "id": "github-kwizzlesurp10-ctrl-x402-mcp-496",
     "issue_number": 496,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "kwizzlesurp10-ctrl/x402-mcp",
     "published_at": "2026-08-26T15:06:36Z",
@@ -862,7 +415,7 @@
     "id": "github-liubaining-louis-louis-os-344",
     "issue_number": 344,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:50:06Z",
+    "last_checked_at": "2026-09-13T23:54:02Z",
     "notes": null,
     "project": "liubaining-louis/louis-os",
     "published_at": "2026-08-10T17:28:57Z",
