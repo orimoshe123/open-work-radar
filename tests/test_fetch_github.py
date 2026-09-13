@@ -62,6 +62,64 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(reward["amount"], 50)
         self.assertEqual(reward["provenance"], "unverified")
 
+    def test_outsider_direct_reward_is_not_actionable_without_maintainer_evidence(self):
+        item = self.issue(20, title="Bounty: $50", body="Please fix the parser.", author_association="NONE")
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "NONE")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "NONE", reward), "third_party_claim")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_contributor_reward_proposal_is_excluded(self):
+        item = self.issue(
+            21,
+            title="Proposed $25 docs bounty",
+            body="Would you approve a $25 bounty for this documentation change?",
+            author_association="CONTRIBUTOR",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "CONTRIBUTOR")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "CONTRIBUTOR", reward), "contributor_proposal")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_external_mirror_is_excluded_even_when_owner_authored(self):
+        item = self.issue(
+            22,
+            title="[other/repo] [Bounty $50] Fix parser",
+            body="### 赏金平台 / Platform GitHub\n### 原始链接 / Source URL\nhttps://github.com/other/repo/issues/7",
+            labels=["bounty", "external-mirror"],
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], item["labels"] and ["bounty", "external-mirror"], "OWNER")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], ["bounty", "external-mirror"], "OWNER", reward), "secondary_source")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_incidental_maintainer_money_mention_is_excluded(self):
+        item = self.issue(
+            23,
+            title="Introductions and project notes",
+            body="I have 83 USDC of earned bounty money stuck elsewhere. Please introduce yourself here.",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward), "incidental_reward_mention")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_maintainer_body_reward_heading_is_actionable(self):
+        item = self.issue(
+            24,
+            title="Add parser regression tests",
+            body="Please add the missing tests.\n\n## Bounty: $200\nPaid after maintainer acceptance.",
+        )
+        record = fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set())
+        self.assertIsNotNone(record)
+        self.assertEqual(record["reward"]["amount"], 200)
+
+    def test_unfunded_or_quarantined_issue_is_excluded(self):
+        item = self.issue(
+            25,
+            title="[QUARANTINED — DO NOT CLAIM] Bounty: $50",
+            body="This bounty is not funded or claimable yet.",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward), "not_actionable")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
     def test_required_purchase_is_not_reward_amount(self):
         reward = fetch_github.reward_metadata("Bounty available", "Contributor must buy $20 of credits before testing.", [], "OWNER")
         self.assertIsNone(reward["amount"])
@@ -72,17 +130,17 @@ class CollectorTests(unittest.TestCase):
         self.assertIsNone(reward["amount"])
         self.assertEqual(reward["provenance"], "unverified")
 
-    def test_availability_question_is_unclear(self):
+    def test_availability_question_is_excluded(self):
         item = self.issue(3, title="Bounty integration question", body="Is this bounty still available? The docs mention a $10 reward.", author_association="NONE")
-        record = fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set())
-        self.assertEqual(record["status"], "unclear")
-        self.assertEqual(record["difficulty"], "unknown")
-        self.assertEqual(record["ai_assistability"], "unknown")
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "NONE")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "NONE", reward), "availability_inquiry")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
 
-    def test_explicit_unavailable_state_is_unclear(self):
+    def test_explicit_unavailable_state_is_excluded(self):
         item = self.issue(4, body="Current work state: `unavailable`\nSolver reward: 6.00 USDC")
-        record = fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set())
-        self.assertEqual(record["status"], "unclear")
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward), "not_actionable")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
 
     def test_reward_word_without_amount_is_not_actionable(self):
         item = self.issue(6, title="Bounty available", body="Please fix the docs.")
