@@ -35,15 +35,19 @@ SECONDARY_SOURCE = re.compile(
     re.I | re.S,
 )
 EXTERNAL_REFERENCE = re.compile(r"^\s*##\s+(?:current external state|verified live opportunities)\b", re.I | re.M)
+NOT_ACTIONABLE_TITLE = re.compile(r"^\s*\[(?:draft|quarantined|unfunded)\b", re.I)
 NOT_ACTIONABLE = re.compile(
-    r"\b(?:unfunded|quarantined)\b"
+    r"^\s*(?:>\s*)?(?:\*\*)?unfunded\s+precommit\b"
+    r"|\b(?:this\s+issue|this\s+bounty)\s+is\s+not\s+(?:yet\s+)?(?:funded|claimable|live)\b"
+    r"|\bnot\s+funded\s+or\s+claimable\b"
+    r"|\bfunding\s+needed\s*\.\s*do\s+not\s+start\s+expecting\s+payment\b"
     r"|\bdo\s+not\s+claim\b"
     r"|\bdo\s+not\b.{0,100}\bstart\s+implementation\b"
-    r"|\bnot\s+(?:yet\s+)?(?:funded|claimable|live)\b"
     r"|\bbecomes\s+paid\s+work\s+only\s+after\b"
     r"|\bdo\s+not\s+announce\b.{0,100}\bas\s+live\b",
-    re.I | re.S,
+    re.I | re.M | re.S,
 )
+NOT_ACTIONABLE_LABELS = {"funding-needed"}
 INDIRECT = re.compile(r"^\s*\[META\]|\bgross\s+margin\b", re.I)
 DIRECT_TITLE_AMOUNT = re.compile(r"\b(?:bounty|reward|prize)\b\s*[:#-]?\s*\d[\d,]*(?:\.\d+)?", re.I)
 DIRECT_REWARD_PREFIX = re.compile(
@@ -170,7 +174,12 @@ def reward_metadata(title: str, body: str, labels: list[str], association: str) 
             continue
         amount = float(match.group("amount").replace(",", ""))
         amount = int(amount) if amount.is_integer() else amount
-        currency = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP"}.get(match.group("currency").upper(), match.group("currency").upper())
+        currency_token = match.group("currency").upper()
+        if currency_token in {"$", "US$"}:
+            stablecoin = re.match(r"\s*(USDC|USDT)\b", text[match.end():match.end() + 12], re.I)
+            currency = stablecoin.group(1).upper() if stablecoin else "USD"
+        else:
+            currency = {"€": "EUR", "£": "GBP"}.get(currency_token, currency_token)
         start, end = max(0, match.start() - 100), min(len(text), match.end() + 100)
         return {"amount": amount, "currency": currency, "provenance": "stated" if association in MAINTAINERS else "unverified", "verified": False, "evidence": compact(text[start:end], 260)}
     signal = REWARD.search(text)
@@ -212,7 +221,7 @@ def candidate_classification(title: str, body: str, labels: list[str], associati
         return "secondary_source"
     if QUESTION.search(text):
         return "availability_inquiry"
-    if UNAVAILABLE.search(text) or NOT_ACTIONABLE.search(text):
+    if UNAVAILABLE.search(text) or NOT_ACTIONABLE_TITLE.search(title) or NOT_ACTIONABLE.search(text) or label_set & NOT_ACTIONABLE_LABELS:
         return "not_actionable"
     if association not in MAINTAINERS:
         return "contributor_proposal" if PROPOSAL.search(text) else "third_party_claim"
