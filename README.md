@@ -39,8 +39,9 @@ v0.1a deliberately favors **precision over recall**:
 - v0.1a only treats a direct reward offer authored by an `OWNER`, `MEMBER`, or `COLLABORATOR` as actionable; contributor-authored reward proposals and third-party claims are excluded until stronger approval evidence can be collected;
 - the reward must be presented as payment for the current Issue, not merely appear in a log, funding note, historical payout, external-opportunity roundup, or other incidental context;
 - self-identified mirror/index Issues are excluded even when the mirror repository's owner authored them;
-- a cost, fee, credit purchase, deposit, or similar contributor expense is not treated as the reward amount;
-- availability inquiries and explicit not-actionable signals such as `unfunded`, `quarantined`, `do not claim`, or “not claimable” are excluded from the actionable dataset;
+- Issues with an existing assignee are treated as already taken and excluded in this precision-first version;
+- a cost, fee, credit purchase, deposit, contributor-funded payout, or similar contributor expense is not treated as a reward opportunity;
+- availability inquiries and explicit not-actionable signals such as `unfunded`, `quarantined`, `in_progress`, `do not claim`, or “not claimable” are excluded from the actionable dataset;
 - fields such as difficulty and AI assistability remain `unknown` when v0.1a cannot support them reliably.
 
 This is intentionally conservative and can miss legitimate community-authored bounty Issues whose maintainer approval exists only in comments or another external source. That evidence can be supported later; v0.1a prefers a false negative to presenting a proposal as paid work.
