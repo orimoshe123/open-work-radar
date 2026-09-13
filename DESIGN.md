@@ -217,6 +217,8 @@ Suggested reward confidence:
 - `stated` — maintainer states a reward but external backing is not independently confirmed
 - `unverified` — reward-like wording exists but provenance is unclear
 
+For the GitHub-only v0.1a collector, actionability is stricter than provenance alone. A candidate enters the actionable dataset only when the Issue author has a maintainer-side `author_association` (`OWNER`, `MEMBER`, or `COLLABORATOR`) and the title/body directly presents payment for that Issue. Contributor proposals, availability inquiries, mirror/index Issues, incidental monetary mentions, and explicit not-yet-actionable notices are filtered out. This deliberately trades recall for precision until comment-level or platform-level approval evidence is collected.
+
 Never imply that payout is guaranteed merely because a reward is listed.
 
 ---
