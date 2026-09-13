@@ -141,6 +141,29 @@ class CollectorTests(unittest.TestCase):
         reward = fetch_github.reward_metadata("Bounty: $15 USDC", "", [], "OWNER")
         self.assertEqual((reward["amount"], reward["currency"]), (15, "USDC"))
 
+    def test_solver_reward_is_preferred_over_total_funding(self):
+        body = (
+            "## Funded payment contract\n"
+            "- Confirmed funding: **2.01 / 2.01 USDC**\n"
+            "- Solver reward: **2.00 USDC**\n"
+            "- Automated verifier reward: **0.01 USDC**"
+        )
+        reward = fetch_github.reward_metadata("[DIRECT] Add integration", body, ["bounty", "funded-live"], "OWNER")
+        self.assertEqual((reward["amount"], reward["currency"]), (2, "USDC"))
+
+    def test_bounty_sequence_number_is_not_treated_as_reward_amount(self):
+        title = "Bounty #3 — Robotic laboratory bridge [$20,000 USDC]"
+        reward = fetch_github.reward_metadata(title, "## Prize: $20,000 USDC", [], "OWNER")
+        self.assertTrue(fetch_github.direct_reward_offer(title, "## Prize: $20,000 USDC"))
+        self.assertEqual((reward["amount"], reward["currency"]), (20000, "USDC"))
+
+    def test_colon_amount_without_currency_can_still_mark_direct_offer(self):
+        title = "Issue 2: [Bounty:250] Implement image processing"
+        body = "This issue and its associated bounty ($250) will close after a maintainer implementation."
+        reward = fetch_github.reward_metadata(title, body, [], "OWNER")
+        self.assertTrue(fetch_github.direct_reward_offer(title, body))
+        self.assertEqual(reward["amount"], 250)
+
     def test_required_purchase_is_not_reward_amount(self):
         reward = fetch_github.reward_metadata("Bounty available", "Contributor must buy $20 of credits before testing.", [], "OWNER")
         self.assertIsNone(reward["amount"])
