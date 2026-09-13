@@ -120,6 +120,27 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward), "not_actionable")
         self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
 
+    def test_actionable_bounty_can_mention_unfunded_state_in_acceptance_criteria(self):
+        item = self.issue(
+            26,
+            title="[DIRECT] Add earning-loop integration",
+            body=(
+                "## Funded payment contract\n"
+                "**Funded and claimable on Base mainnet.**\n"
+                "- Solver reward: **2.00 USDC**\n"
+                "## Acceptance criteria\n"
+                "- Cover claimable, unfunded, verifier-unready, and submitted-not-paid states."
+            ),
+            labels=["bounty", "funded-live"],
+        )
+        record = fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set())
+        self.assertIsNotNone(record)
+        self.assertEqual((record["reward"]["amount"], record["reward"]["currency"]), (2, "USDC"))
+
+    def test_dollar_prefixed_stablecoin_is_preserved(self):
+        reward = fetch_github.reward_metadata("Bounty: $15 USDC", "", [], "OWNER")
+        self.assertEqual((reward["amount"], reward["currency"]), (15, "USDC"))
+
     def test_required_purchase_is_not_reward_amount(self):
         reward = fetch_github.reward_metadata("Bounty available", "Contributor must buy $20 of credits before testing.", [], "OWNER")
         self.assertIsNone(reward["amount"])
