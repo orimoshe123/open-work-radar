@@ -22,7 +22,7 @@ BODY_LIMIT = 2000
 MAINTAINERS = {"OWNER", "MEMBER", "COLLABORATOR"}
 REWARD = re.compile(r"\b(?:bounty|bounties|reward|rewards|payout|payouts|compensation|stipend|grant|prize|paid)\b", re.I)
 EXPENSE = re.compile(r"\b(?:buy|purchase|cost|fee|fees|credit|credits|subscription|deposit|spend|expense|charge|gas)\b|\b(?:must\s+pay|pay\s+(?:for|to|before))\b", re.I)
-UNAVAILABLE = re.compile(r"(?:current\s+work\s+state|lifecycle|work\s+state)\s*[:=-]\s*`?(?:unavailable|in[_ -]?progress|claimed|submitted|verification[_ -]?pending)`?|\b(?:bounty|reward)\s+(?:is\s+)?(?:closed|unavailable|no\s+longer\s+available)\b|\bno\s+longer\s+accepting\b", re.I)
+UNAVAILABLE = re.compile(r"(?:current\s+work\s+state|lifecycle|work\s+state)\s*[:=-]\s*(?:\*{1,2})?\s*`?(?:unavailable|in[_ -]?progress|claimed|submitted|verification[_ -]?pending)`?|\b(?:bounty|reward)\s+(?:is\s+)?(?:closed|unavailable|no\s+longer\s+available)\b|\bno\s+longer\s+accepting\b", re.I)
 QUESTION = re.compile(r"\b(?:is|whether)\s+(?:this|the)\s+(?:bounty|reward)\s+still\s+available\b|\bcould\s+you\s+confirm\b.{0,120}\b(?:bounty|reward)\b.{0,80}\bavailable\b", re.I | re.S)
 PROPOSAL = re.compile(
     r"\b(?:proposed|proposal|would\s+you|could\s+you|consider|approve|sponsor)\b.{0,160}\b(?:bounty|reward|paid|payment|compensation)\b"
