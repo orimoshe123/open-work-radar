@@ -229,6 +229,8 @@ The default implementation should use GitHub Actions for periodic scans.
 
 Initial cadence: once or twice per day.
 
+Current v0.1a cadence: once per day at `17 0 * * *` (00:17 UTC), with `workflow_dispatch` retained for manual runs.
+
 Example:
 
 ```yaml

@@ -22,7 +22,7 @@ If Open Work Radar saved you time or helped you find useful work, optional suppo
 
 🚧 **Early MVP.**
 
-The first implementation milestone is a GitHub-only collector that can be run locally or through a manual GitHub Actions workflow. Scheduled collection remains intentionally disabled until the manual workflow has been validated.
+The first implementation milestone is a GitHub-only collector that can be run locally or through GitHub Actions. After manual validation, scheduled collection now runs once per day while `workflow_dispatch` remains available for manual checks.
 
 Nothing in this repository should currently be treated as a complete opportunity index.
 
@@ -55,7 +55,7 @@ GITHUB_TOKEN=... python scripts/fetch_github.py
 
 `GITHUB_TOKEN` is optional for public data but recommended because GitHub applies lower unauthenticated rate limits.
 
-The GitHub Actions workflow can be started manually with `workflow_dispatch`. It commits only `data/opportunities.json` when generated output actually changes. **No cron schedule is enabled yet.**
+The GitHub Actions workflow runs once per day at **00:17 UTC** (about **09:17 JST**) and can also be started manually with `workflow_dispatch`. It commits only `data/opportunities.json` when generated output actually changes.
 
 ## What it aims to show
 
@@ -110,7 +110,7 @@ Sources will only be added when automated collection is technically and legally 
 
 ## Automation
 
-The intended default is periodic collection with **GitHub Actions**, but scheduling is not enabled in v0.1a.
+The current v0.1a default is periodic collection with **GitHub Actions**, scheduled once per day at **00:17 UTC**, with manual `workflow_dispatch` retained.
 
 A scan roughly:
 
