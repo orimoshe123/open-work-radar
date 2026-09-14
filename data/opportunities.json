@@ -24,7 +24,7 @@
       "help wanted",
       "status: open bounty"
     ],
-    "last_checked_at": "2026-09-14T01:22:41Z",
+    "last_checked_at": "2026-09-14T02:31:29Z",
     "notes": null,
     "project": "HHS/simpler-grants-gov",
     "published_at": "2026-04-23T19:17:45Z",
@@ -40,49 +40,6 @@
     "status": "open",
     "title": "Add unit tests for `src.services.service_utils`",
     "updated_at": "2026-09-08T21:32:49Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## Goal Let OpenHands recognize Agent Bounties as paid-work infrastructure and follow the earning loop with canonical claimability and payment checks. ## Funded payment contract **Funded and claimable on Base mainnet.** - Contract: `0x294cda5faa1b1a9dd7eca2cb52daff1fa843ad22` - Contract explorer: https://basescan.org/address/0x294cda5faa1b1a9dd7eca2cb52daff1fa843ad22 - Creation/funding transaction: https://basescan.org/tx/0x14d236261965ec07ab236ba1d0c88d1b3ccf6104132ecda32fad786fc8439856 - Confirmed funding: **2.01 / 2.01 USDC** - Solver reward: **2.00 USDC** - Automated verifier reward and refundable claim bond: **0.01 USDC** - Verification: `sandboxed_regression_v1`, one precommitted automated signer - Immutable benchmark: https://github.com/NSPG13/agent-bounties/tree/aa28ec742efd4063260653510ba324e291267515/benchmarks/direct-growth-v2/openhands-integration ## Acceptance criteria - Add a current OpenHands Skill at .agents/skills/agent-bounties/SKILL.md and keep it synchronized with canonical guidance. - Add a deterministic stop hook that blocks completion reporting until focused checks and submission evidence exist. - Cover claimable, unfunded, verifier-unready, and submitted-not-paid states with one exact next action. - Pass python /benchmark/check.py in the precommitted sandbox. ## Earn it 1. Comment `/claim #773 wallet: 0xYOUR_PUBLIC_BASE_ADDRESS`. 2. Sign the returned bounded claim request. Never share a private key or seed phrase. 3. Wait for the canonical claim state, then implement only this issue and open a focused PR. 4. Run the focused checks and submit the requested repository, commit, command, snapshot digest, and discovery feedback evidence. 5. The precommitted sandbox verifies the submitted commit. A passing result settles automatically; only canonical `BountySettled` proves payment. How did you find this bounty, what made it worth attempting, and what should be easier next time? **Post your own bounty:** https://agentbounties.app/post.html <!-- age…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "funded-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-NSPG13-agent-bounties-773",
-    "issue_number": 773,
-    "labels": [
-      "bounty",
-      "distribution",
-      "funded-live",
-      "payments",
-      "verification-pending"
-    ],
-    "last_checked_at": "2026-09-14T01:22:41Z",
-    "notes": null,
-    "project": "NSPG13/agent-bounties",
-    "published_at": "2026-08-06T05:46:00Z",
-    "reward": {
-      "amount": 2,
-      "currency": "USDC",
-      "evidence": "- Solver reward: **2.00 USDC**",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/NSPG13/agent-bounties/issues/773",
-    "status": "open",
-    "title": "[DIRECT] Add an OpenHands earning-loop integration",
-    "updated_at": "2026-09-11T08:53:33Z"
   },
   {
     "ai_assistability": "unknown",
@@ -107,7 +64,7 @@
       "core-team",
       "enhancement"
     ],
-    "last_checked_at": "2026-09-14T01:22:41Z",
+    "last_checked_at": "2026-09-14T02:31:29Z",
     "notes": null,
     "project": "cxlinux-ai/cx-distro",
     "published_at": "2025-11-12T02:20:55Z",
@@ -144,7 +101,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-14",
     "issue_number": 14,
     "labels": [],
-    "last_checked_at": "2026-09-14T01:22:41Z",
+    "last_checked_at": "2026-09-14T02:31:29Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-13T06:49:24Z",
@@ -181,7 +138,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-9",
     "issue_number": 9,
     "labels": [],
-    "last_checked_at": "2026-09-14T01:22:41Z",
+    "last_checked_at": "2026-09-14T02:31:29Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-12T17:52:37Z",
