@@ -205,6 +205,35 @@ class CollectorTests(unittest.TestCase):
         )
         self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
 
+    def test_markdown_wrapped_in_progress_lifecycle_is_excluded(self):
+        item = self.issue(
+            32,
+            title="Bounty: $20",
+            body="- **Lifecycle:** `in_progress`\n- Solver reward: 20 USDC",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], ["bounty"], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(item["title"], item["body"], ["bounty"], "OWNER", reward),
+            "not_actionable",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_verification_pending_label_is_excluded(self):
+        item = self.issue(
+            33,
+            title="Bounty: $20",
+            body="Funded and claimable.\nSolver reward: 20 USDC",
+            labels=["bounty", "verification-pending"],
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], ["bounty", "verification-pending"], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(
+                item["title"], item["body"], ["bounty", "verification-pending"], "OWNER", reward
+            ),
+            "not_actionable",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
     def test_contributor_payment_requirement_is_excluded(self):
         item = self.issue(
             30,

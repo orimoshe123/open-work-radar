@@ -48,7 +48,7 @@ NOT_ACTIONABLE = re.compile(
     r"|\bdo\s+not\s+announce\b.{0,100}\bas\s+live\b",
     re.I | re.M | re.S,
 )
-NOT_ACTIONABLE_LABELS = {"funding-needed"}
+NOT_ACTIONABLE_LABELS = {"funding-needed", "verification-pending"}
 INDIRECT = re.compile(r"^\s*\[META\]|\bgross\s+margin\b", re.I)
 CONTRIBUTOR_PAYMENT = re.compile(
     r"\bpay\s*:\s*(?:send\s+)?(?:USDC|USDT|USD|EUR|GBP|BTC|ETH|SOL)\b.{0,120}\bto\s+payto\b"
