@@ -22,7 +22,7 @@ BODY_LIMIT = 2000
 MAINTAINERS = {"OWNER", "MEMBER", "COLLABORATOR"}
 REWARD = re.compile(r"\b(?:bounty|bounties|reward|rewards|payout|payouts|compensation|stipend|grant|prize|paid)\b", re.I)
 EXPENSE = re.compile(r"\b(?:buy|purchase|cost|fee|fees|credit|credits|subscription|deposit|spend|expense|charge|gas)\b|\b(?:must\s+pay|pay\s+(?:for|to|before))\b", re.I)
-UNAVAILABLE = re.compile(r"(?:current\s+work\s+state|lifecycle|work\s+state)\s*[:=-]\s*`?unavailable`?|\b(?:bounty|reward)\s+(?:is\s+)?(?:closed|unavailable|no\s+longer\s+available)\b|\bno\s+longer\s+accepting\b", re.I)
+UNAVAILABLE = re.compile(r"(?:current\s+work\s+state|lifecycle|work\s+state)\s*[:=-]\s*`?(?:unavailable|in[_ -]?progress|claimed|submitted|verification[_ -]?pending)`?|\b(?:bounty|reward)\s+(?:is\s+)?(?:closed|unavailable|no\s+longer\s+available)\b|\bno\s+longer\s+accepting\b", re.I)
 QUESTION = re.compile(r"\b(?:is|whether)\s+(?:this|the)\s+(?:bounty|reward)\s+still\s+available\b|\bcould\s+you\s+confirm\b.{0,120}\b(?:bounty|reward)\b.{0,80}\bavailable\b", re.I | re.S)
 PROPOSAL = re.compile(
     r"\b(?:proposed|proposal|would\s+you|could\s+you|consider|approve|sponsor)\b.{0,160}\b(?:bounty|reward|paid|payment|compensation)\b"
@@ -31,7 +31,8 @@ PROPOSAL = re.compile(
 )
 SECONDARY_SOURCE = re.compile(
     r"外部\s*bounty\s*任务镜像"
-    r"|###\s*赏金平台\s*/\s*platform\b.{0,400}###\s*原始链接\s*/\s*source url\b",
+    r"|###\s*赏金平台\s*/\s*platform\b.{0,400}###\s*原始链接\s*/\s*source url\b"
+    r"|\b(?:github\s+)?issue\s+is\s+(?:a\s+)?mirrored\s+(?:board\s+)?thread\b",
     re.I | re.S,
 )
 EXTERNAL_REFERENCE = re.compile(r"^\s*##\s+(?:current external state|verified live opportunities)\b", re.I | re.M)
@@ -49,10 +50,15 @@ NOT_ACTIONABLE = re.compile(
 )
 NOT_ACTIONABLE_LABELS = {"funding-needed"}
 INDIRECT = re.compile(r"^\s*\[META\]|\bgross\s+margin\b", re.I)
+CONTRIBUTOR_PAYMENT = re.compile(
+    r"\bpay\s*:\s*(?:send\s+)?(?:USDC|USDT|USD|EUR|GBP|BTC|ETH|SOL)\b.{0,120}\bto\s+payto\b"
+    r"|\btx\s+hash\s+to\s+payto\b",
+    re.I | re.S,
+)
 DIRECT_TITLE_AMOUNT = re.compile(r"\b(?:bounty|reward|prize)\b\s*[:-]?\s*\d[\d,]*(?:\.\d+)?", re.I)
 DIRECT_REWARD_PREFIX = re.compile(
     r"^\s*(?:#{1,6}\s*)?(?:[-*]\s*)?(?:\*\*)?"
-    r"(?:bounty|reward|prize|payment|payout|compensation|solver\s+reward|target\s+solver\s+reward)\b",
+    r"(?:bounty|reward(?!/)|prize|payment|payout|compensation|solver\s+reward|target\s+solver\s+reward)\b",
     re.I,
 )
 CURRENCY = r"(?:US\$|\$|USD|CAD|AUD|EUR|€|GBP|£|JPY|USDC|USDT|BTC|ETH|SOL)"
@@ -252,6 +258,8 @@ def candidate_classification(title: str, body: str, labels: list[str], associati
         return "not_actionable"
     if association not in MAINTAINERS:
         return "contributor_proposal" if PROPOSAL.search(text) else "third_party_claim"
+    if CONTRIBUTOR_PAYMENT.search(body):
+        return "contributor_payment_required"
     if INDIRECT.search(title):
         return "indirect_or_meta"
     if EXTERNAL_REFERENCE.search(body):
@@ -274,6 +282,9 @@ def normalize_issue(item: dict[str, Any], source_id: str, checked_at: str, now: 
     if not isinstance(number, int) or not url:
         return None
     title, body = str(item.get("title") or ""), str(item.get("body") or "")
+    assignees = sorted(str(x.get("login")) for x in item.get("assignees", []) if isinstance(x, dict) and x.get("login"))
+    if assignees:
+        return None
     labels = sorted(str(x.get("name")) for x in item.get("labels", []) if isinstance(x, dict) and x.get("name"))
     association = str(item.get("author_association") or "NONE").upper()
     reward = reward_metadata(title, body, labels, association)
@@ -285,7 +296,7 @@ def normalize_issue(item: dict[str, Any], source_id: str, checked_at: str, now: 
         "status": "open", "github_state": "open",
         "reward": reward, "difficulty": "unknown", "ai_assistability": "unknown", "deadline": None,
         "competition": {"attempts": None, "claims": None, "open_prs": None},
-        "assignees": sorted(str(x.get("login")) for x in item.get("assignees", []) if isinstance(x, dict) and x.get("login")),
+        "assignees": assignees,
         "labels": labels, "author_association": association, "body_excerpt": compact(body),
         "published_at": item.get("created_at"), "updated_at": item.get("updated_at"), "last_checked_at": checked_at,
         "discovery_sources": [source_id], "notes": None,

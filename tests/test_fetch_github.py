@@ -24,12 +24,13 @@ class FakeClient:
 class CollectorTests(unittest.TestCase):
     NOW = dt.datetime(2026, 9, 9, 1, 0, tzinfo=dt.timezone.utc)
 
-    def issue(self, number, *, state="open", title="Docs bounty: $25", body="Please update the README.", labels=None, author_association="OWNER", project="example/project", updated_at="2026-09-08T00:00:00Z"):
+    def issue(self, number, *, state="open", title="Docs bounty: $25", body="Please update the README.", labels=None, assignees=None, author_association="OWNER", project="example/project", updated_at="2026-09-08T00:00:00Z"):
         return {
             "number": number, "state": state, "title": title, "body": body,
             "html_url": f"https://github.com/{project}/issues/{number}",
             "repository_url": f"https://api.github.com/repos/{project}",
-            "labels": [{"name": label} for label in (labels or [])], "assignees": [],
+            "labels": [{"name": label} for label in (labels or [])],
+            "assignees": [{"login": login} for login in (assignees or [])],
             "author_association": author_association, "created_at": "2026-09-01T00:00:00Z", "updated_at": updated_at,
         }
 
@@ -173,6 +174,62 @@ class CollectorTests(unittest.TestCase):
         reward = fetch_github.reward_metadata("Fix typo", "", ["bounty"], "OWNER")
         self.assertIsNone(reward["amount"])
         self.assertEqual(reward["provenance"], "unverified")
+
+    def test_assigned_issue_is_excluded(self):
+        item = self.issue(27, assignees=["worker"], title="Bounty: $50")
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_mirrored_board_thread_is_excluded(self):
+        item = self.issue(
+            28,
+            title="Bounty: $10",
+            body="Worker price: $10\nThis GitHub issue is a mirrored board thread.",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward),
+            "secondary_source",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_in_progress_lifecycle_is_excluded(self):
+        item = self.issue(
+            29,
+            title="Bounty: $20",
+            body="Lifecycle: `in_progress`\nSolver reward: 20 USDC",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward),
+            "not_actionable",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_contributor_payment_requirement_is_excluded(self):
+        item = self.issue(
+            30,
+            title="Bounty: $15 USDC",
+            body="Pay: send USDC on Base to payTo.\nAcceptance: $15 USDC tx hash to payTo on this issue.",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward),
+            "contributor_payment_required",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
+
+    def test_candidate_reward_budget_is_not_direct_issue_payment(self):
+        item = self.issue(
+            31,
+            title="Cash sprint: find live micro-missions",
+            body="## Hard candidate gates\n- reward/budget: **5-50 USDC**\n- listing currently open",
+        )
+        reward = fetch_github.reward_metadata(item["title"], item["body"], [], "OWNER")
+        self.assertEqual(
+            fetch_github.candidate_classification(item["title"], item["body"], [], "OWNER", reward),
+            "incidental_reward_mention",
+        )
+        self.assertIsNone(fetch_github.normalize_issue(item, "one", "2026-09-09T01:00:00Z", self.NOW, 180, set()))
 
     def test_availability_question_is_excluded(self):
         item = self.issue(3, title="Bounty integration question", body="Is this bounty still available? The docs mention a $10 reward.", author_association="NONE")
