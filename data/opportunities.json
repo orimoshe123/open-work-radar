@@ -24,7 +24,7 @@
       "help wanted",
       "status: open bounty"
     ],
-    "last_checked_at": "2026-09-13T23:54:02Z",
+    "last_checked_at": "2026-09-14T01:22:41Z",
     "notes": null,
     "project": "HHS/simpler-grants-gov",
     "published_at": "2026-04-23T19:17:45Z",
@@ -67,7 +67,7 @@
       "payments",
       "verification-pending"
     ],
-    "last_checked_at": "2026-09-13T23:54:02Z",
+    "last_checked_at": "2026-09-14T01:22:41Z",
     "notes": null,
     "project": "NSPG13/agent-bounties",
     "published_at": "2026-08-06T05:46:00Z",
@@ -83,86 +83,6 @@
     "status": "open",
     "title": "[DIRECT] Add an OpenHands earning-loop integration",
     "updated_at": "2026-09-11T08:53:33Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## Bounty: 2 RTC ### What to do 1. Visit [BoTTube on ToolPilot.ai](https://www.toolpilot.ai/products/bottube-1) 2. Click \"Write a Review\" 3. Leave an **honest** review based on your experience with [bottube.ai](https://bottube.ai) 4. Come back here and paste a screenshot or link to your review ### Requirements - Must actually use bottube.ai first (browse videos, upload one, comment, etc.) - Review must be honest — we want real feedback, not just \"great platform\" - Mention at least one specific feature you tried (e.g., video upload, AI agents, comments, API/SDK) - 5 stars not required — we value honest feedback. But if you genuinely like it, say so! ### Why We currently have 7 reviews (86% positive). Real user reviews help other developers discover BoTTube. ### Claim Comment below with your wallet address after posting your review. Multiple people can claim this bounty. **RTC Value: 2 RTC (~$0.20)**",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "bounty"
-    ],
-    "github_state": "open",
-    "id": "github-Scottcjn-rustchain-bounties-2155",
-    "issue_number": 2155,
-    "labels": [
-      "bounty"
-    ],
-    "last_checked_at": "2026-09-13T23:54:02Z",
-    "notes": null,
-    "project": "Scottcjn/rustchain-bounties",
-    "published_at": "2026-03-16T18:12:44Z",
-    "reward": {
-      "amount": 0.2,
-      "currency": "USD",
-      "evidence": "let address after posting your review. Multiple people can claim this bounty. **RTC Value: 2 RTC (~$0.20)**",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/Scottcjn/rustchain-bounties/issues/2155",
-    "status": "open",
-    "title": "[EASY BOUNTY: 2 RTC] Leave an Honest Review of BoTTube on ToolPilot.ai",
-    "updated_at": "2026-09-13T20:25:17Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "Frantic bounty #97 Your first bounty is on the house ($10 back when it clears, first five) Worker price: $10 Slots: 5 (5 available) Status: Available Claim: https://gofrantic.com/bounties/97 Funding receipt: https://gofrantic.com/r/0aec30b5 Frantic is the source of truth. This GitHub issue is a mirrored board thread. <!-- frantic:thread:frantic:bounty:97 --> <!-- runx-outbox-envelope: v1 --> <!-- runx-outbox-entry: frantic:bounty:97 --> <!-- runx-outbox-metadata: eyJzY2hlbWFfdmVyc2lvbiI6InJ1bngub3V0Ym94LWVudHJ5LnByb3ZpZGVyLXRocmVhZC1jcmVhdGUudjEiLCJjaGFubmVsIjoiZ2l0aHViX2lzc3VlIiwic291cmNlIjoiZnJhbnRpYyIsInNvdXJjZV9yZWYiOiJmcmFudGljOmJvdW50eTo5NyIsImFjdGlvbiI6ImNyZWF0ZSIsInRhcmdldF9yZXBvIjoiYXVzY2FzdGVyL2ZyYW50aWMtYm9hcmQiLCJ0aXRsZSI6IkZyYW50aWMgYm91bnR5ICM5NzogWW91ciBmaXJzdCBib3VudHkgaXMgb24gdGhlIGhvdXNlICgkMTAgYmFjayB3aGVuIGl0IGNsZWFycywgZmlyc3QgZml2ZSkiLCJsYWJlbHMiOlsiYm91bnR5IiwiZnVuZGVkIiwiYXZhaWxhYmxlIl0sImRlZHVwZV9rZXkiOiJmcmFudGljOmJvdW50eTo5NyIsIm91dGJveF9yZWNlaXB0X2lkIjoiZnJhbnRpYzpib3VudHk6OTcifQ -->",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "bounty"
-    ],
-    "github_state": "open",
-    "id": "github-auscaster-frantic-board-277",
-    "issue_number": 277,
-    "labels": [
-      "available",
-      "bounty",
-      "funded"
-    ],
-    "last_checked_at": "2026-09-13T23:54:02Z",
-    "notes": null,
-    "project": "auscaster/frantic-board",
-    "published_at": "2026-07-08T01:14:12Z",
-    "reward": {
-      "amount": 10,
-      "currency": "USD",
-      "evidence": "Frantic bounty #97: Your first bounty is on the house ($10 back when it clears, first five)",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/auscaster/frantic-board/issues/277",
-    "status": "open",
-    "title": "Frantic bounty #97: Your first bounty is on the house ($10 back when it clears, first five)",
-    "updated_at": "2026-09-13T21:26:02Z"
   },
   {
     "ai_assistability": "unknown",
@@ -187,7 +107,7 @@
       "core-team",
       "enhancement"
     ],
-    "last_checked_at": "2026-09-13T23:54:02Z",
+    "last_checked_at": "2026-09-14T01:22:41Z",
     "notes": null,
     "project": "cxlinux-ai/cx-distro",
     "published_at": "2025-11-12T02:20:55Z",
@@ -224,7 +144,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-14",
     "issue_number": 14,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:54:02Z",
+    "last_checked_at": "2026-09-14T01:22:41Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-13T06:49:24Z",
@@ -261,7 +181,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-9",
     "issue_number": 9,
     "labels": [],
-    "last_checked_at": "2026-09-13T23:54:02Z",
+    "last_checked_at": "2026-09-14T01:22:41Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-12T17:52:37Z",
@@ -277,159 +197,5 @@
     "status": "open",
     "title": "feat: [Bounty $150] Implement LibreOffice Headless Automation Engine for Secure Document Processing",
     "updated_at": "2026-09-08T23:24:21Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [
-      "kwizzlesurp10-ctrl"
-    ],
-    "author_association": "OWNER",
-    "body_excerpt": "## Settlement - Amount: **$5 USDC** (5_000_000 atomic) - Network: Base `eip155:8453` - Asset: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` - payTo: `0x8A897D546c22d726b45Fa25F0EBB56207E63fF4e` - Pay: send USDC on Base to payTo, then comment `FUNDED` + BaseScan URL Protocol: https://github.com/kwizzlesurp10-ctrl/x402-mcp/blob/master/docs/BOUNTIES.md Machine cashier: https://x402-mcp.onrender.com/.well-known/funding.json ## Public spec (add-only) Create **new** file `docs/TOOL_LEGIBILITY.md`. Do not rewrite tool implementations or README. Score every live MCP tool (target: 16) on: 1. Outcome the caller gets 2. When to use / when not to use 3. Cost visibility (free vs paid, atomic amount if paid) 4. Worked example (URL or payload) 5. Instructive failure (what a 402 / 4xx looks like) Table format. Mark `unknown` instead of inventing. Cite file paths or live URLs. ## Acceptance - [ ] File exists at `docs/TOOL_LEGIBILITY.md` on `master` - [ ] One row per tool, five columns filled or marked unknown - [ ] No edits to `app/` - [ ] Issue comment contains BaseScan tx to `payTo` for $5 USDC ## Close template ``` DELIVERED: https://github.com/kwizzlesurp10-ctrl/x402-mcp/blob/master/docs/TOOL_LEGIBILITY.md PAID: https://basescan.org/tx/<hash> payTo confirmed: 0x8A897D546c22d726b45Fa25F0EBB56207E63fF4e ```",
-    "category": "docs",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "funded-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-kwizzlesurp10-ctrl-x402-mcp-494",
-    "issue_number": 494,
-    "labels": [],
-    "last_checked_at": "2026-09-13T23:54:02Z",
-    "notes": null,
-    "project": "kwizzlesurp10-ctrl/x402-mcp",
-    "published_at": "2026-08-26T15:06:21Z",
-    "reward": {
-      "amount": 5,
-      "currency": "USDC",
-      "evidence": "bounty: $5 USDC — add-only docs/TOOL_LEGIBILITY.md",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/kwizzlesurp10-ctrl/x402-mcp/issues/494",
-    "status": "open",
-    "title": "bounty: $5 USDC — add-only docs/TOOL_LEGIBILITY.md",
-    "updated_at": "2026-09-11T10:25:41Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [
-      "kwizzlesurp10-ctrl"
-    ],
-    "author_association": "OWNER",
-    "body_excerpt": "## Settlement - Amount: **$15 USDC** (15_000_000 atomic) - Network: Base `eip155:8453` - Asset: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` - payTo: `0x8A897D546c22d726b45Fa25F0EBB56207E63fF4e` - Pay: USDC on Base to payTo, comment `FUNDED` + BaseScan URL Protocol: https://github.com/kwizzlesurp10-ctrl/x402-mcp/blob/master/docs/BOUNTIES.md Machine cashier: https://x402-mcp.onrender.com/.well-known/funding.json ## Public spec (add-only) Create **new** file `docs/BAZAAR_AUDIT.md`. Do not change discovery code. For each discoverable paid/free resource (city catalog, property-check paths, MCP tools that emit bazaar.info): - resource URL - input shape - example output (or `missing`) - price atomic + USD - whether price is under the common $0.10 agent filter - payTo present in 402 `accepts[]` if paid ## Acceptance - [ ] `docs/BAZAAR_AUDIT.md` on `master` - [ ] Catalog + at least one paid city endpoint inspected live - [ ] Gaps listed as `missing`, not padded - [ ] No `app/` edits - [ ] $15 USDC tx hash to payTo on this issue ## Close template ``` DELIVERED: https://github.com/kwizzlesurp10-ctrl/x402-mcp/blob/master/docs/BAZAAR_AUDIT.md PAID: https://basescan.org/tx/<hash> payTo confirmed: 0x8A897D546c22d726b45Fa25F0EBB56207E63fF4e ```",
-    "category": "docs",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "funded-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-kwizzlesurp10-ctrl-x402-mcp-495",
-    "issue_number": 495,
-    "labels": [],
-    "last_checked_at": "2026-09-13T23:54:02Z",
-    "notes": null,
-    "project": "kwizzlesurp10-ctrl/x402-mcp",
-    "published_at": "2026-08-26T15:06:28Z",
-    "reward": {
-      "amount": 15,
-      "currency": "USDC",
-      "evidence": "bounty: $15 USDC — add-only docs/BAZAAR_AUDIT.md",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/kwizzlesurp10-ctrl/x402-mcp/issues/495",
-    "status": "open",
-    "title": "bounty: $15 USDC — add-only docs/BAZAAR_AUDIT.md",
-    "updated_at": "2026-09-11T00:17:45Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [
-      "kwizzlesurp10-ctrl"
-    ],
-    "author_association": "OWNER",
-    "body_excerpt": "## Settlement - Amount: **$25 USDC** (25_000_000 atomic) - Network: Base `eip155:8453` - Asset: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` - payTo: `0x8A897D546c22d726b45Fa25F0EBB56207E63fF4e` - Pay: USDC on Base to payTo, comment `FUNDED` + BaseScan URL Protocol: https://github.com/kwizzlesurp10-ctrl/x402-mcp/blob/master/docs/BOUNTIES.md Machine cashier: https://x402-mcp.onrender.com/.well-known/funding.json ## Public spec (add-only) Create **new** file `docs/LIVE_LEDGER.md`. Honest numbers including zeros and bad weeks. Do not rewrite dashboard code. Minimum columns: - period (trailing 7d / 30d) - gross USDC to payTo (on-chain + sale-watch issues) - unique paying wallets - settlement failures if known - top paid endpoints if known - `unknown` where logs are not public Seed from existing `sale` issues (including 2026-08-26 $0.01 prints from `0xc22c17fc…`) and `/ledger` if readable. Do not invent revenue. ## Acceptance - [ ] `docs/LIVE_LEDGER.md` on `master` - [ ] At least one real BaseScan or sale-issue citation - [ ] No fabricated totals - [ ] No `app/` edits - [ ] $25 USDC tx hash to payTo on this issue ## Close template ``` DELIVERED: https://github.com/kwizzlesurp10-ctrl/x402-mcp/blob/master/docs/LIVE_LEDGER.md PAID: https://basescan.org/tx/<hash> payTo confirmed: 0x8A897D546c22d726b45Fa25F0EBB56207E63fF4e ```",
-    "category": "docs",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "funded-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-kwizzlesurp10-ctrl-x402-mcp-496",
-    "issue_number": 496,
-    "labels": [],
-    "last_checked_at": "2026-09-13T23:54:02Z",
-    "notes": null,
-    "project": "kwizzlesurp10-ctrl/x402-mcp",
-    "published_at": "2026-08-26T15:06:36Z",
-    "reward": {
-      "amount": 25,
-      "currency": "USDC",
-      "evidence": "bounty: $25 USDC — add-only docs/LIVE_LEDGER.md",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/kwizzlesurp10-ctrl/x402-mcp/issues/496",
-    "status": "open",
-    "title": "bounty: $25 USDC — add-only docs/LIVE_LEDGER.md",
-    "updated_at": "2026-09-11T00:17:40Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "OWNER",
-    "body_excerpt": "## Objective Get Louis OS from crypto-ready infrastructure to the first real on-chain payment by maximizing the density of genuinely executable micro-missions paying **5–50 USDC**. ## Hard success ladder 1. Discover at least **10 additional lawful agent-native / crypto-paying sources** beyond the currently integrated sources. 2. Continuously normalize and refresh them with canonical evidence. 3. Produce **3 simultaneously executable candidates** satisfying all hard gates below. 4. Make **1 real external submission/claim** when already authorized and no KYC, spend, signature, contract acceptance, identity fabrication or prohibited action is required. 5. Deliver the bounded work with deterministic acceptance evidence. 6. Verify the **first real on-chain payment** to Louis's receive-only wallet. Never count expected/escrowed/simulated value as revenue. ## Hard candidate gates - reward/budget: **5–50 USDC** (or a crypto reward with a reliably normalized USDC value in this range); - estimated effort: preferably <=3h; - listing currently open and deadline live; - payment funded / escrowed / on-chain evidence where the platform exposes it; - agent/remote execution allowed; - Louis has a demonstrated capability to complete the deliverable; - no physical presence, unverifiable personal eligibility, fake identity, account manipulation, unauthorized security testing, gambling/speculation, or prohibited work; - no mandatory upfront spend/stake; - low enough competition/friction to make first payment plausible. ## Source-expansion directive Search broadly across public web/API/GitHub ecosystems for agent-native jobs, micro-bounties, escrowed requests, paid OSS tasks, data/research/translation/writing/coding microtasks and machine-to-machine service markets. Prioritize sources with public read APIs/feeds and explicit crypto/USDC payout. Do not add a source merely to increase source count: validate it against live listings and reject dead/empty/fake sources. Existing lanes such a…",
-    "category": "unknown",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "translation-bounty"
-    ],
-    "github_state": "open",
-    "id": "github-liubaining-louis-louis-os-344",
-    "issue_number": 344,
-    "labels": [],
-    "last_checked_at": "2026-09-13T23:54:02Z",
-    "notes": null,
-    "project": "liubaining-louis/louis-os",
-    "published_at": "2026-08-10T17:28:57Z",
-    "reward": {
-      "amount": 50,
-      "currency": "USDC",
-      "evidence": "- reward/budget: **5–50 USDC** (or a crypto reward with a reliably normalized USDC value in this range);",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/liubaining-louis/louis-os/issues/344",
-    "status": "open",
-    "title": "Cash sprint: 5–50 USDC agent-native micro-missions",
-    "updated_at": "2026-08-10T18:04:20Z"
   }
 ]
