@@ -24,7 +24,7 @@
       "help wanted",
       "status: open bounty"
     ],
-    "last_checked_at": "2026-09-16T04:48:23Z",
+    "last_checked_at": "2026-09-17T04:51:42Z",
     "notes": null,
     "project": "HHS/simpler-grants-gov",
     "published_at": "2026-04-23T19:17:45Z",
@@ -40,46 +40,6 @@
     "status": "open",
     "title": "Add unit tests for `src.services.service_utils`",
     "updated_at": "2026-09-08T21:32:49Z"
-  },
-  {
-    "ai_assistability": "unknown",
-    "assignees": [],
-    "author_association": "COLLABORATOR",
-    "body_excerpt": "# $9740486 Bounty Have you ever wanted FREE money bucks??? 🤑💰 Of COURSE you do! If you want to win $9740486, all you have to do is implement **LINUX EMULATOR** in OmniBlocks. How bountiful... BOUNTIES! Go on, make a pull request on GitHub!",
-    "category": "design",
-    "competition": {
-      "attempts": null,
-      "claims": null,
-      "open_prs": null
-    },
-    "deadline": null,
-    "difficulty": "unknown",
-    "discovery_sources": [
-      "bounty"
-    ],
-    "github_state": "open",
-    "id": "github-OmniBlocks-bountyfarmer-4",
-    "issue_number": 4,
-    "labels": [
-      "bounty",
-      "enhancement"
-    ],
-    "last_checked_at": "2026-09-16T04:48:23Z",
-    "notes": null,
-    "project": "OmniBlocks/bountyfarmer",
-    "published_at": "2026-09-15T23:37:03Z",
-    "reward": {
-      "amount": 9740486,
-      "currency": "USD",
-      "evidence": "$9740486 BOUNTY FOR IMPLEMENTING A LINUX EMULATOR INTO OMNIBLOCKS",
-      "provenance": "stated",
-      "verified": false
-    },
-    "source": "github",
-    "source_url": "https://github.com/OmniBlocks/bountyfarmer/issues/4",
-    "status": "open",
-    "title": "$9740486 BOUNTY FOR IMPLEMENTING A LINUX EMULATOR INTO OMNIBLOCKS",
-    "updated_at": "2026-09-16T03:21:20Z"
   },
   {
     "ai_assistability": "unknown",
@@ -103,7 +63,7 @@
     "labels": [
       "bounty"
     ],
-    "last_checked_at": "2026-09-16T04:48:23Z",
+    "last_checked_at": "2026-09-17T04:51:42Z",
     "notes": null,
     "project": "Scottcjn/rustchain-bounties",
     "published_at": "2026-03-16T18:12:44Z",
@@ -118,7 +78,7 @@
     "source_url": "https://github.com/Scottcjn/rustchain-bounties/issues/2155",
     "status": "open",
     "title": "[EASY BOUNTY: 2 RTC] Leave an Honest Review of BoTTube on ToolPilot.ai",
-    "updated_at": "2026-09-16T03:41:28Z"
+    "updated_at": "2026-09-17T03:46:42Z"
   },
   {
     "ai_assistability": "unknown",
@@ -134,7 +94,6 @@
     "deadline": null,
     "difficulty": "unknown",
     "discovery_sources": [
-      "bounty",
       "docs-bounty"
     ],
     "github_state": "open",
@@ -144,7 +103,7 @@
       "core-team",
       "enhancement"
     ],
-    "last_checked_at": "2026-09-16T04:48:23Z",
+    "last_checked_at": "2026-09-17T04:51:42Z",
     "notes": null,
     "project": "cxlinux-ai/cx-distro",
     "published_at": "2025-11-12T02:20:55Z",
@@ -181,7 +140,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-14",
     "issue_number": 14,
     "labels": [],
-    "last_checked_at": "2026-09-16T04:48:23Z",
+    "last_checked_at": "2026-09-17T04:51:42Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-13T06:49:24Z",
@@ -218,7 +177,7 @@
     "id": "github-iyeanur6-cyber-ultimate-ai-platform-9",
     "issue_number": 9,
     "labels": [],
-    "last_checked_at": "2026-09-16T04:48:23Z",
+    "last_checked_at": "2026-09-17T04:51:42Z",
     "notes": null,
     "project": "iyeanur6-cyber/ultimate-ai-platform",
     "published_at": "2026-07-12T17:52:37Z",
@@ -249,6 +208,7 @@
     "deadline": null,
     "difficulty": "unknown",
     "discovery_sources": [
+      "bounty",
       "docs-bounty"
     ],
     "github_state": "open",
@@ -257,7 +217,7 @@
     "labels": [
       "Bounty#6"
     ],
-    "last_checked_at": "2026-09-16T04:48:23Z",
+    "last_checked_at": "2026-09-17T04:51:42Z",
     "notes": null,
     "project": "moorcheh-ai/memanto",
     "published_at": "2026-07-22T18:52:55Z",
@@ -272,6 +232,6 @@
     "source_url": "https://github.com/moorcheh-ai/memanto/issues/1609",
     "status": "open",
     "title": "[BOUNTY $200] 🐜 The Great Memory Migration: Own Your Agentic Memory with Memanto + OKF",
-    "updated_at": "2026-09-15T19:43:56Z"
+    "updated_at": "2026-09-17T02:30:42Z"
   }
 ]
