@@ -60,9 +60,29 @@ PR_SUBMITTED = re.compile(r"\bPR submitted\b|\bpull request (?:has been )?submit
 FIXES_ISSUE = re.compile(r"\b(?:fixes|closes|resolves)\s+#(?P<n>\d+)\b", re.I)
 DEADLINE = re.compile(
     r"(?:submission\s+)?deadline(?:\s+of|\s*[:=])?\s*"
-    r"(?P<date>\d{4}-\d{2}-\d{2})(?:[ T](?P<time>\d{2}:\d{2})(?::\d{2})?)?(?:\s*UTC)?",
+    r"(?P<date>\d{4}-\d{2}-\d{2})(?:[ T](?P<time>\d{2}:\d{2})(?::\d{2})?)?"
+    r"(?:\s*(?P<tz>UTC|GMT|Z|JST|EST|EDT|PST|PDT|CST|CDT|MST|MDT|CET|CEST|BST|[+-]\d{2}:?\d{2}))?",
     re.I,
 )
+KNOWN_TZ_OFFSETS = {
+    "UTC": dt.timedelta(0),
+    "GMT": dt.timedelta(0),
+    "Z": dt.timedelta(0),
+    "JST": dt.timedelta(hours=9),
+    "EST": dt.timedelta(hours=-5),
+    "EDT": dt.timedelta(hours=-4),
+    "PST": dt.timedelta(hours=-8),
+    "PDT": dt.timedelta(hours=-7),
+    "CST": dt.timedelta(hours=-6),
+    "CDT": dt.timedelta(hours=-5),
+    "MST": dt.timedelta(hours=-7),
+    "MDT": dt.timedelta(hours=-6),
+    "CET": dt.timedelta(hours=1),
+    "CEST": dt.timedelta(hours=2),
+    "BST": dt.timedelta(hours=1),
+}
+TZ_TAIL = re.compile(r"\s*([A-Za-z]{2,5}|[+-]\d{2}:?\d{2})")
+LINK_LAST = re.compile(r'<[^>]*[?&]page=(\d+)[^>]*>\s*;\s*rel="last"', re.I)
 STILL_ACTIVE_Q = re.compile(
     r"\b(?:is|whether)\s+(?:this|the)\s+bounty\s+still\s+(?:active|available|funded)\b"
     r"|\bstill\s+(?:active|available)\b.{0,60}\bbounty\b"
@@ -92,6 +112,12 @@ class CollectorError(RuntimeError):
 
 
 class SourceFetchError(CollectorError):
+    pass
+
+
+class LifecycleUnavailable(CollectorError):
+    """Lifecycle evidence could not be fetched; do not treat as 'no PRs'."""
+
     pass
 
 
@@ -131,37 +157,65 @@ class GitHubClient:
                 break
 
     def lifecycle_signals(self, project: str, number: int) -> dict[str, Any]:
-        """Narrow comment/timeline fetch for retained candidates only."""
+        """Newest-biased comment/timeline fetch for retained candidates only.
+
+        GitHub lists comments/timeline oldest-first. A single first page can miss
+        the current work state on busy issues, so we also fetch the last page when
+        Link headers say more exist. HTTP/network failure raises rather than
+        returning empty evidence.
+        """
         if "/" not in project:
-            return {}
+            return {"comments": [], "timeline": []}
         owner, repo = project.split("/", 1)
-        comments, timeline = [], []
         try:
-            resp = self.session.get(
+            comments = self._newest_biased(
                 f"{self.api_url}/repos/{owner}/{repo}/issues/{number}/comments",
-                params={"per_page": 30},
-                timeout=self.timeout,
+                per_page=100,
             )
-            if resp.ok:
-                rows = resp.json()
-                if isinstance(rows, list):
-                    comments = [x for x in rows if isinstance(x, dict)]
-        except requests.RequestException:
-            comments = []
-        try:
-            resp = self.session.get(
+            timeline = self._newest_biased(
                 f"{self.api_url}/repos/{owner}/{repo}/issues/{number}/timeline",
-                params={"per_page": 40},
-                timeout=self.timeout,
+                per_page=100,
                 headers={"Accept": "application/vnd.github+json"},
             )
-            if resp.ok:
-                rows = resp.json()
-                if isinstance(rows, list):
-                    timeline = [x for x in rows if isinstance(x, dict)]
-        except requests.RequestException:
-            timeline = []
+        except (requests.RequestException, LifecycleUnavailable) as exc:
+            raise LifecycleUnavailable(str(exc)) from exc
         return {"comments": comments, "timeline": timeline}
+
+    def _newest_biased(self, url: str, per_page: int = 100, headers: dict[str, str] | None = None) -> list[dict[str, Any]]:
+        try:
+            first = self.session.get(url, params={"per_page": per_page, "page": 1}, timeout=self.timeout, headers=headers)
+        except requests.RequestException as exc:
+            raise LifecycleUnavailable(str(exc)) from exc
+        if not first.ok:
+            raise LifecycleUnavailable(f"GitHub API HTTP {first.status_code}: {first.text[:300]}")
+        rows = first.json()
+        if not isinstance(rows, list):
+            raise LifecycleUnavailable(f"expected a list from {url}")
+        items = [x for x in rows if isinstance(x, dict)]
+        last_page = last_page_from_link(first.headers.get("Link") or "")
+        if last_page and last_page > 1:
+            try:
+                last = self.session.get(
+                    url, params={"per_page": per_page, "page": last_page}, timeout=self.timeout, headers=headers
+                )
+            except requests.RequestException as exc:
+                raise LifecycleUnavailable(str(exc)) from exc
+            if not last.ok:
+                raise LifecycleUnavailable(f"GitHub API HTTP {last.status_code}: {last.text[:300]}")
+            extra = last.json()
+            if not isinstance(extra, list):
+                raise LifecycleUnavailable(f"expected a list from {url} page {last_page}")
+            seen = {id(x) for x in items}
+            keys = {(x.get("id"), x.get("url"), x.get("html_url")) for x in items}
+            for row in extra:
+                if not isinstance(row, dict):
+                    continue
+                key = (row.get("id"), row.get("url"), row.get("html_url"))
+                if key in keys or id(row) in seen:
+                    continue
+                items.append(row)
+                keys.add(key)
+        return items
 
 
 def now_utc() -> dt.datetime:
@@ -170,6 +224,17 @@ def now_utc() -> dt.datetime:
 
 def iso_z(value: dt.datetime) -> str:
     return value.isoformat().replace("+00:00", "Z")
+
+
+def last_page_from_link(link_header: str) -> int | None:
+    match = LINK_LAST.search(link_header or "")
+    if not match:
+        return None
+    try:
+        page = int(match.group(1))
+    except ValueError:
+        return None
+    return page if page > 0 else None
 
 
 def parse_time(value: Any) -> dt.datetime | None:
@@ -360,28 +425,80 @@ def normalize_issue(item: dict[str, Any], source_id: str, checked_at: str, now: 
     }
 
 
+def _tz_offset(token: str) -> dt.timedelta | None:
+    raw = (token or "").strip()
+    if not raw:
+        return dt.timedelta(0)
+    named = KNOWN_TZ_OFFSETS.get(raw.upper())
+    if named is not None:
+        return named
+    match = re.fullmatch(r"([+-])(\d{2}):?(\d{2})", raw)
+    if not match:
+        return None
+    sign = 1 if match.group(1) == "+" else -1
+    return dt.timedelta(hours=sign * int(match.group(2)), minutes=sign * int(match.group(3)))
+
+
 def parse_deadline(body: str, title: str = "") -> dt.datetime | None:
+    """Parse a deadline only when the timezone is explicit and understood.
+
+    Unknown trailing timezone text (for example `JST` if it were not mapped, or
+    `FOO`) must not be silently treated as UTC.
+    """
     text = f"{title}\n{body}"
     match = DEADLINE.search(text)
     if not match:
         return None
+    dangling = TZ_TAIL.match(text[match.end():])
+    tz = match.group("tz")
+    if dangling and not tz:
+        return None
+    offset = _tz_offset(tz or "")
+    if offset is None:
+        return None
     date, time_part = match.group("date"), match.group("time") or "23:59"
-    parsed = parse_time(f"{date}T{time_part}:00Z")
-    return parsed
+    try:
+        naive = dt.datetime.fromisoformat(f"{date}T{time_part}:00")
+    except ValueError:
+        return None
+    return (naive - offset).replace(tzinfo=dt.timezone.utc)
+
+
+def _source_issue(event: dict[str, Any]) -> dict[str, Any]:
+    src = event.get("source") or {}
+    issue = src.get("issue") if isinstance(src, dict) else None
+    return issue if isinstance(issue, dict) else {}
+
+
+def _pr_attaches_work(issue_number: int, src: dict[str, Any], event: dict[str, Any]) -> bool:
+    text = " ".join(
+        str(x or "")
+        for x in (src.get("title"), src.get("body"), event.get("body"), src.get("html_url"))
+    )
+    hit = FIXES_ISSUE.search(text)
+    return bool(hit) and int(hit.group("n")) == issue_number
 
 
 def linked_work_prs(issue_number: int, body: str, signals: dict[str, Any]) -> list[str]:
-    """Open/draft PRs that actually attach work to this issue — not mere /attempt comments."""
+    """Currently active work PRs attached to this issue.
+
+    A timeline cross-reference whose source happens to be a PR is not enough:
+    closed/rejected PRs and mere mentions must not suppress an actionable issue.
+    """
     found: list[str] = []
     if PR_SUBMITTED.search(body or ""):
         found.append("body:PR submitted")
     for ev in signals.get("timeline") or []:
-        src = (ev.get("source") or {}).get("issue") or {}
-        if src.get("pull_request"):
-            found.append(str(src.get("html_url") or src.get("url") or "timeline-pr"))
-        text = str(ev.get("body") or "")
-        if FIXES_ISSUE.search(text) and int(FIXES_ISSUE.search(text).group("n")) == issue_number:
-            found.append("timeline-fixes")
+        if not isinstance(ev, dict):
+            continue
+        src = _source_issue(ev)
+        if not src.get("pull_request"):
+            continue
+        if str(src.get("state") or "").lower() != "open":
+            continue
+        if not _pr_attaches_work(issue_number, src, ev):
+            continue
+        found.append(str(src.get("html_url") or src.get("url") or "timeline-pr"))
     for comment in signals.get("comments") or []:
         text = str(comment.get("body") or "")
         hit = FIXES_ISSUE.search(text)
@@ -424,21 +541,29 @@ def second_stage(record: dict[str, Any], item: dict[str, Any], signals: dict[str
 
 
 def _substantive(record: dict[str, Any]) -> str:
-    payload = {k: v for k, v in record.items() if k != "last_checked_at"}
+    payload = {k: v for k, v in record.items() if k not in {"last_checked_at", "last_changed_at"}}
     return json.dumps(payload, sort_keys=True, default=str)
 
 
-def stabilize_checked_at(records: list[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Keep last_checked_at when nothing substantive changed so timestamp-only scans do not commit."""
+def apply_freshness(records: list[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep last_checked_at as the real check time; track last_changed_at separately."""
     old = {r.get("source_url"): r for r in existing if r.get("source_url")}
     out = []
     for rec in records:
+        rec = dict(rec)
         prev = old.get(rec.get("source_url"))
+        checked = rec.get("last_checked_at")
         if prev and _substantive(prev) == _substantive(rec):
-            rec = dict(rec)
-            rec["last_checked_at"] = prev.get("last_checked_at")
+            rec["last_changed_at"] = prev.get("last_changed_at") or prev.get("last_checked_at")
+        else:
+            rec["last_changed_at"] = checked
         out.append(rec)
     return out
+
+
+def stabilize_checked_at(records: list[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Back-compat alias: freshness is truthful; material change time is separate."""
+    return apply_freshness(records, existing)
 
 
 def merge_records(records: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -472,23 +597,34 @@ def collect(sources_path: Path, output_path: Path, client: SearchClient, now: dt
     sources, stale, excluded = load_config(sources_path)
     existing, now = load_existing(output_path), now or now_utc()
     fresh, successful, failed = [], set(), []
+    evaluated_urls: set[str] = set()
+    lifecycle_blocked: set[str] = set()
     for source in sources:
         try:
             kept = []
             for item in client.search_issues(source["query"], source["max_pages"]):
                 rec = normalize_issue(item, source["id"], iso_z(now), now, stale, excluded)
-                if not rec:
-                    continue
-                signals = item.get("_lifecycle") or {}
+                url = str((rec or {}).get("source_url") or item.get("html_url") or "")
+                signals = item.get("_lifecycle")
                 getter = getattr(client, "lifecycle_signals", None)
-                if not signals and callable(getter):
+                lifecycle_failed = False
+                if rec and signals is None and callable(getter):
                     try:
                         signals = getter(rec["project"], rec["issue_number"]) or {}
                     except Exception:
-                        signals = {}
-                rec = second_stage(rec, item, signals, now)
+                        lifecycle_failed = True
+                if rec and lifecycle_failed:
+                    if url:
+                        lifecycle_blocked.add(url)
+                    continue
                 if rec:
-                    kept.append(rec)
+                    if url:
+                        evaluated_urls.add(url)
+                    rec = second_stage(rec, item, signals or {}, now)
+                    if rec:
+                        kept.append(rec)
+                elif url:
+                    evaluated_urls.add(url)
             records = kept
             fresh.extend(records)
             successful.add(source["id"])
@@ -498,9 +634,16 @@ def collect(sources_path: Path, output_path: Path, client: SearchClient, now: dt
             print(f"warning: {source['id']} failed: {exc}", file=sys.stderr)
     if not successful:
         raise CollectorError("all sources failed; existing output was left unchanged" if existing else "all sources failed; no output was written")
-    preserved = [old for old in existing if not old.get("discovery_sources") or set(old.get("discovery_sources", [])) & set(failed)]
+    preserved = []
+    for old in existing:
+        url = old.get("source_url")
+        if not url or url in evaluated_urls:
+            continue
+        srcs = set(old.get("discovery_sources") or [])
+        if url in lifecycle_blocked or srcs & set(failed) or srcs & successful or not srcs:
+            preserved.append(old)
     output = merge_records([*fresh, *preserved])
-    output = stabilize_checked_at(output, existing)
+    output = apply_freshness(output, existing)
     write_json(output_path, output)
     return len(output), len(successful), failed
 
