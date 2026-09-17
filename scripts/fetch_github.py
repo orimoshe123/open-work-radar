@@ -56,6 +56,24 @@ CONTRIBUTOR_PAYMENT = re.compile(
     re.I | re.S,
 )
 DIRECT_TITLE_AMOUNT = re.compile(r"\b(?:bounty|reward|prize)\b\s*[:-]?\s*\d[\d,]*(?:\.\d+)?", re.I)
+PR_SUBMITTED = re.compile(r"\bPR submitted\b|\bpull request (?:has been )?submitted\b", re.I)
+FIXES_ISSUE = re.compile(r"\b(?:fixes|closes|resolves)\s+#(?P<n>\d+)\b", re.I)
+DEADLINE = re.compile(
+    r"(?:submission\s+)?deadline(?:\s+of|\s*[:=])?\s*"
+    r"(?P<date>\d{4}-\d{2}-\d{2})(?:[ T](?P<time>\d{2}:\d{2})(?::\d{2})?)?(?:\s*UTC)?",
+    re.I,
+)
+STILL_ACTIVE_Q = re.compile(
+    r"\b(?:is|whether)\s+(?:this|the)\s+bounty\s+still\s+(?:active|available|funded)\b"
+    r"|\bstill\s+(?:active|available)\b.{0,60}\bbounty\b"
+    r"|\bbounty\s+still\s+(?:active|available)\b",
+    re.I,
+)
+MAINTAINER_CONFIRM = re.compile(
+    r"\b(?:still\s+(?:active|available|funded|open)|bounty\s+is\s+(?:still\s+)?(?:active|open|funded))\b",
+    re.I,
+)
+CLAIM_ONLY = re.compile(r"(?:^|\s)(?:/try|/attempt|/claim)\b", re.I)
 DIRECT_REWARD_PREFIX = re.compile(
     r"^\s*(?:#{1,6}\s*)?(?:[-*]\s*)?(?:\*\*)?"
     r"(?:bounty|reward(?!/)|prize|payment|payout|compensation|solver\s+reward|target\s+solver\s+reward)\b",
@@ -79,6 +97,10 @@ class SourceFetchError(CollectorError):
 
 class SearchClient(Protocol):
     def search_issues(self, query: str, max_pages: int = 1) -> Iterable[dict[str, Any]]: ...
+
+
+class LifecycleClient(Protocol):
+    def lifecycle_signals(self, project: str, number: int) -> dict[str, Any]: ...
 
 
 class GitHubClient:
@@ -107,6 +129,39 @@ class GitHubClient:
             total = payload.get("total_count")
             if not items or len(items) < PER_PAGE or (isinstance(total, int) and page * PER_PAGE >= total):
                 break
+
+    def lifecycle_signals(self, project: str, number: int) -> dict[str, Any]:
+        """Narrow comment/timeline fetch for retained candidates only."""
+        if "/" not in project:
+            return {}
+        owner, repo = project.split("/", 1)
+        comments, timeline = [], []
+        try:
+            resp = self.session.get(
+                f"{self.api_url}/repos/{owner}/{repo}/issues/{number}/comments",
+                params={"per_page": 30},
+                timeout=self.timeout,
+            )
+            if resp.ok:
+                rows = resp.json()
+                if isinstance(rows, list):
+                    comments = [x for x in rows if isinstance(x, dict)]
+        except requests.RequestException:
+            comments = []
+        try:
+            resp = self.session.get(
+                f"{self.api_url}/repos/{owner}/{repo}/issues/{number}/timeline",
+                params={"per_page": 40},
+                timeout=self.timeout,
+                headers={"Accept": "application/vnd.github+json"},
+            )
+            if resp.ok:
+                rows = resp.json()
+                if isinstance(rows, list):
+                    timeline = [x for x in rows if isinstance(x, dict)]
+        except requests.RequestException:
+            timeline = []
+        return {"comments": comments, "timeline": timeline}
 
 
 def now_utc() -> dt.datetime:
@@ -141,7 +196,7 @@ def load_config(path: Path) -> tuple[list[dict[str, Any]], int, set[str]]:
     sources, seen = [], set()
     for item in raw["sources"]:
         source_id, query = str(item.get("id", "")).strip(), str(item.get("query", "")).strip()
-        pages = int(item.get("max_pages", 1))
+        pages = int(item.get("max_pages", 2))
         if not source_id or not query or source_id in seen or not 1 <= pages <= 10:
             raise CollectorError(f"invalid source entry: {item!r}")
         seen.add(source_id)
@@ -290,17 +345,100 @@ def normalize_issue(item: dict[str, Any], source_id: str, checked_at: str, now: 
     reward = reward_metadata(title, body, labels, association)
     if candidate_classification(title, body, labels, association, reward) != "maintainer_reward_offer":
         return None
+    deadline = parse_deadline(body, title)
     return {
         "id": f"github-{project.replace('/', '-')}-{number}", "source": "github", "source_url": url,
         "title": title, "project": project, "issue_number": number, "category": category(title, labels),
         "status": "open", "github_state": "open",
-        "reward": reward, "difficulty": "unknown", "ai_assistability": "unknown", "deadline": None,
+        "reward": reward, "difficulty": "unknown", "ai_assistability": "unknown",
+        "deadline": iso_z(deadline) if deadline else None,
         "competition": {"attempts": None, "claims": None, "open_prs": None},
         "assignees": assignees,
         "labels": labels, "author_association": association, "body_excerpt": compact(body),
         "published_at": item.get("created_at"), "updated_at": item.get("updated_at"), "last_checked_at": checked_at,
         "discovery_sources": [source_id], "notes": None,
     }
+
+
+def parse_deadline(body: str, title: str = "") -> dt.datetime | None:
+    text = f"{title}\n{body}"
+    match = DEADLINE.search(text)
+    if not match:
+        return None
+    date, time_part = match.group("date"), match.group("time") or "23:59"
+    parsed = parse_time(f"{date}T{time_part}:00Z")
+    return parsed
+
+
+def linked_work_prs(issue_number: int, body: str, signals: dict[str, Any]) -> list[str]:
+    """Open/draft PRs that actually attach work to this issue — not mere /attempt comments."""
+    found: list[str] = []
+    if PR_SUBMITTED.search(body or ""):
+        found.append("body:PR submitted")
+    for ev in signals.get("timeline") or []:
+        src = (ev.get("source") or {}).get("issue") or {}
+        if src.get("pull_request"):
+            found.append(str(src.get("html_url") or src.get("url") or "timeline-pr"))
+        text = str(ev.get("body") or "")
+        if FIXES_ISSUE.search(text) and int(FIXES_ISSUE.search(text).group("n")) == issue_number:
+            found.append("timeline-fixes")
+    for comment in signals.get("comments") or []:
+        text = str(comment.get("body") or "")
+        hit = FIXES_ISSUE.search(text)
+        if hit and int(hit.group("n")) == issue_number:
+            found.append(str(comment.get("html_url") or "comment-fixes"))
+    return found
+
+
+def availability_unclear(body: str, signals: dict[str, Any]) -> bool:
+    comments = signals.get("comments") or []
+    questions = STILL_ACTIVE_Q.search(body or "")
+    maintainer_ok = False
+    for comment in comments:
+        text = str(comment.get("body") or "")
+        assoc = str(comment.get("author_association") or "NONE").upper()
+        if STILL_ACTIVE_Q.search(text):
+            questions = True
+        if assoc in MAINTAINERS and MAINTAINER_CONFIRM.search(text):
+            maintainer_ok = True
+    return bool(questions) and not maintainer_ok
+
+
+def second_stage(record: dict[str, Any], item: dict[str, Any], signals: dict[str, Any], now: dt.datetime) -> dict[str, Any] | None:
+    """Comment/PR/deadline checks on first-stage keepers only. Multi-claim comments do not exclude."""
+    body = str(item.get("body") or record.get("body_excerpt") or "")
+    number = int(record["issue_number"])
+    deadline = parse_deadline(body, str(record.get("title") or ""))
+    if deadline and deadline < now:
+        return None
+    if deadline:
+        record = dict(record)
+        record["deadline"] = iso_z(deadline)
+    if linked_work_prs(number, body, signals):
+        return None
+    if availability_unclear(body, signals):
+        record = dict(record)
+        record["status"] = "unclear"
+        return None
+    return record
+
+
+def _substantive(record: dict[str, Any]) -> str:
+    payload = {k: v for k, v in record.items() if k != "last_checked_at"}
+    return json.dumps(payload, sort_keys=True, default=str)
+
+
+def stabilize_checked_at(records: list[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep last_checked_at when nothing substantive changed so timestamp-only scans do not commit."""
+    old = {r.get("source_url"): r for r in existing if r.get("source_url")}
+    out = []
+    for rec in records:
+        prev = old.get(rec.get("source_url"))
+        if prev and _substantive(prev) == _substantive(rec):
+            rec = dict(rec)
+            rec["last_checked_at"] = prev.get("last_checked_at")
+        out.append(rec)
+    return out
 
 
 def merge_records(records: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -336,7 +474,22 @@ def collect(sources_path: Path, output_path: Path, client: SearchClient, now: dt
     fresh, successful, failed = [], set(), []
     for source in sources:
         try:
-            records = [r for item in client.search_issues(source["query"], source["max_pages"]) if (r := normalize_issue(item, source["id"], iso_z(now), now, stale, excluded))]
+            kept = []
+            for item in client.search_issues(source["query"], source["max_pages"]):
+                rec = normalize_issue(item, source["id"], iso_z(now), now, stale, excluded)
+                if not rec:
+                    continue
+                signals = item.get("_lifecycle") or {}
+                getter = getattr(client, "lifecycle_signals", None)
+                if not signals and callable(getter):
+                    try:
+                        signals = getter(rec["project"], rec["issue_number"]) or {}
+                    except Exception:
+                        signals = {}
+                rec = second_stage(rec, item, signals, now)
+                if rec:
+                    kept.append(rec)
+            records = kept
             fresh.extend(records)
             successful.add(source["id"])
             print(f"{source['id']}: kept {len(records)} candidates", file=sys.stderr)
@@ -347,6 +500,7 @@ def collect(sources_path: Path, output_path: Path, client: SearchClient, now: dt
         raise CollectorError("all sources failed; existing output was left unchanged" if existing else "all sources failed; no output was written")
     preserved = [old for old in existing if not old.get("discovery_sources") or set(old.get("discovery_sources", [])) & set(failed)]
     output = merge_records([*fresh, *preserved])
+    output = stabilize_checked_at(output, existing)
     write_json(output_path, output)
     return len(output), len(successful), failed
 
